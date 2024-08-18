@@ -1,0 +1,19 @@
+{
+  "name": "ra2-map-editor",
+  "version": "1.0.0",
+  "description": "一个在线版的红警2地图制作工具",
+  "main": "index.js",
+  "scripts": {
+    "start": "npx serve -p 3000 ."
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/zhaishuaigan/ra2-map-editor.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/zhaishuaigan/ra2-map-editor/issues"
+  },
+  "homepage": "https://github.com/zhaishuaigan/ra2-map-editor#readme"
+}
