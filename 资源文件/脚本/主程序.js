@@ -1,25 +1,29 @@
 import 地图 from "../类库/地图.js";
 import 调试 from "../类库/调试.js";
 import 目录 from "../类库/目录.js";
+import 触发器 from "../类库/地图/触发器.js";
+import 事件 from "../类库/地图/事件.js";
+import 视图 from "../第三方模块/vue/视图.js";
+
 class 主程序 {
 
     async 开始() {
         调试.输出('主程序.开始');
 
-        document.getElementById('开始按钮').addEventListener('click', async () => {
-            调试.输出('开始');
-            var 打开的目录 = await 目录.打开目录();
-            if (!打开的目录) {
-                调式.输出('未选择目录');
-                return;
+        var 新视图 = 视图.创建('#主程序', {
+            组件: {
+                'z菜单栏': 视图.异步加载界面('菜单栏.vue'),
+            },
+            数据: {
+                '自定义文字': "hello world"
+            },
+            方法: {
+                '点击按钮': function () {
+                    console.log('点击按钮');
+                }
             }
-            调试.输出('目录：', 打开的目录.名字);
-            打开的目录.创建子目录("测试目录");
-            var 新文件 = await 打开的目录.创建子文件("测试文件.txt", "测试内容");
-            await 新文件.追加("\n追加内容");
-            调试.输出('子目录：', await 打开的目录.获取子目录列表());
-            调试.输出('子文件：', await 打开的目录.获取子文件列表());
         });
+        新视图.渲染();
     }
 
 }

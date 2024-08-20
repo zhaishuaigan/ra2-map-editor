@@ -4,7 +4,7 @@
   "description": "一个在线版的红警2地图制作工具",
   "main": "index.js",
   "scripts": {
-    "start": "npx serve -p 3000 ."
+    "start": "npx serve -p 5000 ."
   },
   "repository": {
     "type": "git",

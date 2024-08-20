@@ -18,8 +18,6 @@ export default class 地图 {
         await this.动画数据.异步解析();
     }
 
-
-
     获取版本号() {
         if (this.地图数据.配置项['FA2spVersionControl'] && this.地图数据.配置项['FA2spVersionControl']['Version']) {
             return parseInt(this.地图数据.配置项['FA2spVersionControl']['Version']);
@@ -67,6 +65,10 @@ export default class 地图 {
 
     修改属性值(配置项, 属性名, 属性值) {
         this.地图数据.修改属性值(配置项, 属性名, 属性值);
+    }
+
+    生成一个可用的触发器标识() {
+
     }
 
 
