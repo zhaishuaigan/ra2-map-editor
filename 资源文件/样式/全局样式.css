@@ -1,0 +1,287 @@
+* {
+    -webkit-user-drag: none;
+}
+
+html,
+body {
+    margin: 0;
+    padding: 0;
+    display: flex;
+    flex-direction: row;
+    height: 100%;
+    overflow: hidden;
+    width: 100%;
+    color: #AD8439;
+}
+
+body.loading {
+    visibility: hidden;
+}
+
+
+button {
+    background-color: transparent;
+    border: 1px solid #AD8439;
+    color: #AD8439;
+    outline: none;
+    cursor: pointer;
+    line-height: 30px;
+    padding: 0px 10px;
+    border-radius: 5px;
+    box-shadow: 0px 0px 5px #AD8439;
+}
+
+main {
+    display: flex;
+    flex-direction: column;
+    flex: auto;
+}
+
+section {
+    display: flex;
+    flex-direction: column;
+    width: 170px;
+}
+
+.map {
+    flex: auto;
+    background-color: #000;
+    overflow: hidden;
+    color: #FFF;
+    font-size: 50px;
+    position: relative;
+}
+
+.map .box {
+    position: absolute;
+    left: 0px;
+    top: 0px;
+    bottom: 0px;
+    right: 0px;
+    overflow: hidden;
+}
+
+.map .box img {
+    display: block;
+}
+
+.smallMap {
+    height: 226px;
+    background-image: url(../图片/smallMapBackground.png);
+    position: relative;
+}
+
+.smallMap .box {
+    position: absolute;
+    left: 14px;
+    top: 48px;
+    width: 140px;
+    height: 108px;
+    overflow: hidden;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.smallMap .box .panel {
+    max-width: 100%;
+    max-height: 100%;
+    position: relative;
+}
+
+.smallMap .box img {
+    max-width: 100%;
+    max-height: 100%;
+    display: block;
+}
+
+.smallMap .box .panel {
+    --left: 0px;
+    --top: 0px;
+}
+
+.smallMap .box .panel::after {
+    width: 30px;
+    height: 20px;
+    position: absolute;
+    content: '';
+    left: var(--left);
+    top: var(--top);
+    border: 1px solid #f00;
+    pointer-events: none;
+}
+
+.items {
+    flex: auto;
+    background-image: url(../图片/itemBackground.png);
+}
+
+.footer {
+    height: 74px;
+    background-image: url(../图片/itemBottomBackground.png);
+}
+
+footer {
+    height: 32px;
+    background-image: url(../图片/footerBackground_02.png);
+    position: relative;
+    color: #FFF;
+    padding-left: 72px;
+    padding-right: 28px;
+    padding-top: 10px;
+    line-height: 32px;
+    display: flex;
+}
+
+footer::before {
+    position: absolute;
+    left: 0px;
+    top: 0px;
+    display: block;
+    content: "";
+    width: 52px;
+    height: 32px;
+    background-image: url(../图片/footerBackground_01.png);
+}
+
+footer::after {
+    position: absolute;
+    top: 0px;
+    right: 0px;
+    display: block;
+    content: "";
+    width: 28px;
+    height: 32px;
+    background-image: url(../图片/footerBackground_03.png);
+}
+
+footer span,
+footer a {
+    margin-right: 20px;
+    user-select: none;
+    cursor: pointer;
+}
+
+footer .icon {
+    display: inline-block;
+    width: 18px;
+    height: 18px;
+    background-repeat: no-repeat;
+    background-size: 18px 18px;
+    background-position: center;
+}
+
+footer .btn-text {
+    color: #AD8439;
+    line-height: 18px;
+    font-size: 16px;
+    font-weight: bold;
+    text-decoration: none;
+}
+
+.btn-setting {
+    background-image: url(../图片/icon-setting.png);
+}
+
+.btn-point {
+    background-image: url(../图片/icon-point.png);
+}
+
+.btn-ground {
+    background-image: url(../图片/icon-ground.png);
+}
+
+.window {
+    position: absolute;
+    --width: 400px;
+    --height: 300px;
+    left: calc(50% - var(--width) / 2);
+    top: calc(50% - var(--height) / 2);
+    visibility: hidden;
+    background-color: #000;
+    width: var(--width);
+    height: var(--height);
+    border: #AD8439;
+    border-radius: 10px;
+    box-shadow: 0px 0px 10px #AD8439;
+    pointer-events: none;
+    display: flex;
+    flex-direction: column;
+    z-index: 100;
+}
+
+.window::after {
+    position: absolute;
+    content: "关闭";
+    right: 10px;
+    top: 10px;
+    color: #AD8439;
+    pointer-events: all;
+    cursor: pointer;
+}
+
+.window .title {
+    left: 0px;
+    top: 0px;
+    width: 100%;
+    height: 40px;
+    line-height: 40px;
+    text-align: center;
+    font-size: 20px;
+    font-weight: bold;
+    color: #AD8439;
+    border-bottom: 1px solid #AD8439;
+}
+
+.window .content {
+    flex: auto;
+    padding: 10px;
+    overflow: auto;
+    pointer-events: all;
+}
+
+.show {
+    visibility: visible;
+}
+
+
+.openFile {
+    --width: 300px;
+    --height: 200px;
+}
+
+.openFile .content {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+}
+
+.openFile .content button {
+    margin-bottom: 10px;
+}
+
+.code {
+    --width: 800px;
+    --height: 600px;
+}
+
+.code .content {
+    padding: 10px;
+    overflow: hidden;
+}
+
+
+
+.code .content textarea {
+    width: 100%;
+    height: 100%;
+    background-color: #000;
+    color: #FFF;
+    font-size: 18px;
+    line-height: 26px;
+    font-family: Consolas, monospace;
+    border: none;
+    outline: none;
+    resize: none;
+}
