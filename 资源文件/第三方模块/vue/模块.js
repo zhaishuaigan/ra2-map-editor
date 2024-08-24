@@ -11,6 +11,8 @@ export default class 模块 {
                     throw Object.assign(new Error(url + ' ' + res.statusText), { res });
                 }
                 var resText = await res.text();
+                resText = resText.replace(/\<([\u4e00-\u9fa5])/g, "<View$1");
+                resText = resText.replace(/\<\/([\u4e00-\u9fa5])/g, "</View$1");
                 return resText;
             },
             addStyle(textContent) {

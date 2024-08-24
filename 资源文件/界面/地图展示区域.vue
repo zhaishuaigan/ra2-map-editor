@@ -13,14 +13,14 @@ export default 视图.创建组件({
     },
     方法: {
         居中显示地图() {
-            console.log('居中显示地图');
-
-            this.移动视角(40, 40);
-            this.消息隧道.发送消息({
-                消息类型: '大地图偏移',
-                左边偏移百分比: 40,
-                上边偏移百分比: 40
-            });
+            setTimeout(() => {
+                this.移动视角(40, 40);
+                this.消息隧道.发送消息({
+                    消息类型: '大地图偏移',
+                    左边偏移百分比: 40,
+                    上边偏移百分比: 40
+                });
+            }, 1000);
         },
         绑定消息处理事件() {
             this.消息隧道 = new 消息隧道('地图偏移');
@@ -98,7 +98,7 @@ export default 视图.创建组件({
                 var 鼠标Y = e.clientY;
                 var 网页宽度 = document.body.clientWidth;
                 var 网页高度 = document.body.clientHeight;
-                var 边界 = 10;
+                var 边界 = 5;
                 var 移动速度 = 30;
                 var 移动x = 0;
                 var 移动y = 0;

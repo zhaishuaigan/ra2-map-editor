@@ -14,10 +14,10 @@ export default 视图.创建组件({
 
 <template>
     <main>
-        <v地图展示区域 />
-        <v菜单栏 />
+        <地图展示区域 />
+        <菜单栏 />
     </main>
-    <v右侧工具栏 />
+    <右侧工具栏 />
 </template>
 
 <style></style>
