@@ -1,4 +1,4 @@
-import 文件 from "./文件.js";
+import 文件 from "./文件.mjs";
 export default class 目录 {
     句柄 = null;
     constructor(目录句柄) {

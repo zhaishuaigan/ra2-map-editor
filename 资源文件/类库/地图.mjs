@@ -1,8 +1,14 @@
-import 配置 from "./配置.js";
+import 单位 from "./地图/单位.mjs";
+import 配置 from "./配置.mjs";
 export default class 地图 {
     地图数据 = {};
     原始数据 = {};
     动画数据 = {};
+
+    constructor(地图数据, 原始数据, 动画数据) {
+
+    }
+
     async 加载地图(地图数据) {
         this.地图数据 = new 配置(地图数据);
         await this.地图数据.异步解析();
@@ -16,6 +22,14 @@ export default class 地图 {
     async 加载动画(动画数据) {
         this.动画数据 = new 配置(动画数据);
         await this.动画数据.异步解析();
+    }
+
+    获取地图大小() {
+        var 地图配置 = this.地图数据.配置项['Header'];
+        return {
+            宽度: parseInt(地图配置['Width']),
+            高度: parseInt(地图配置['Height'])
+        }
     }
 
     获取版本号() {
@@ -69,6 +83,13 @@ export default class 地图 {
 
     生成一个可用的触发器标识() {
 
+    }
+
+    获取单位(单位注册名) {
+        var 单位数据 = {...this.合并后的地图数据[单位注册名]}
+        var 动画注册名 = 单位数据.Image ? 单位数据.Image : 单位注册名;
+        var 动画数据 = {...this.合并后的动画数据[动画注册名]}
+        return new 单位(单位数据, 动画数据);
     }
 
 

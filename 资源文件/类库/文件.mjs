@@ -40,4 +40,14 @@ export default class 文件 {
         await this.文件句柄.requestPermission({ mode: 'readwrite' });
         await this.文件句柄.rename(新名称);
     }
+    async 创建副本(新名称) {
+        await this.文件句柄.requestPermission({ mode: 'readwrite' });
+        await this.文件句柄.copyTo(新名称);
+    }
+    get 文件名() {
+        return this.文件句柄.name;
+    }
+    get 扩展名() {
+        return this.文件句柄.name.split('.').pop();
+    }
 }

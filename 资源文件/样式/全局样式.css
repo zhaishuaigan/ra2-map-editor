@@ -19,7 +19,7 @@ body.loading {
 }
 
 
-button {
+/* button {
     background-color: transparent;
     border: 1px solid #AD8439;
     color: #AD8439;
@@ -29,7 +29,7 @@ button {
     padding: 0px 10px;
     border-radius: 5px;
     box-shadow: 0px 0px 5px #AD8439;
-}
+} */
 
 main {
     display: flex;
@@ -93,21 +93,25 @@ section {
     max-width: 100%;
     max-height: 100%;
     display: block;
+    border: 1px solid #a5d3ff;
+    box-sizing: border-box;
 }
 
 .smallMap .box .panel {
     --left: 0px;
     --top: 0px;
+    --width: 30px;
+    --height: 20px;
 }
 
 .smallMap .box .panel::after {
-    width: 30px;
-    height: 20px;
+    width: var(--width);
+    height: var(--height);
     position: absolute;
     content: '';
     left: var(--left);
     top: var(--top);
-    border: 1px solid #f00;
+    border: 1px solid #a5d3ff;
     pointer-events: none;
 }
 
@@ -116,12 +120,12 @@ section {
     background-image: url(../图片/itemBackground.png);
 }
 
-.footer {
+.菜单栏 {
     height: 74px;
     background-image: url(../图片/itemBottomBackground.png);
 }
 
-footer {
+.菜单栏 {
     height: 32px;
     background-image: url(../图片/footerBackground_02.png);
     position: relative;
@@ -133,7 +137,7 @@ footer {
     display: flex;
 }
 
-footer::before {
+.菜单栏::before {
     position: absolute;
     left: 0px;
     top: 0px;
@@ -144,7 +148,7 @@ footer::before {
     background-image: url(../图片/footerBackground_01.png);
 }
 
-footer::after {
+.菜单栏::after {
     position: absolute;
     top: 0px;
     right: 0px;
@@ -155,14 +159,14 @@ footer::after {
     background-image: url(../图片/footerBackground_03.png);
 }
 
-footer span,
-footer a {
+.菜单栏>span,
+.菜单栏>a {
     margin-right: 20px;
     user-select: none;
     cursor: pointer;
 }
 
-footer .icon {
+.菜单栏 .icon {
     display: inline-block;
     width: 18px;
     height: 18px;
@@ -171,7 +175,7 @@ footer .icon {
     background-position: center;
 }
 
-footer .btn-text {
+.菜单栏 .btn-text {
     color: #AD8439;
     line-height: 18px;
     font-size: 16px;

@@ -2,8 +2,10 @@
 import 消息隧道 from '../类库/消息隧道.mjs';
 
 export default 视图.创建组件({
-    数据: {
+    属性: {
         消息隧道: null
+    },
+    数据: {
     },
     挂载() {
         this.监听地图偏移消息();
@@ -59,6 +61,9 @@ export default 视图.创建组件({
             var 小地图 = this.$refs.小地图
             小地图.style.setProperty('--left', 左边偏移百分比 + '%');
             小地图.style.setProperty('--top', 上边偏移百分比 + '%');
+        },
+        设置聚焦框的大小() {
+
         }
     }
 

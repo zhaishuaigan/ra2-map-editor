@@ -1,3 +1,4 @@
+
 export default class 配置 {
     配置内容 = "";
     配置项 = {};
