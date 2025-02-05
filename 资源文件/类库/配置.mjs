@@ -3,7 +3,7 @@ export default class 配置 {
     配置内容 = "";
     配置项 = {};
     编辑过的配置项 = new Set();
-    constructor(配置内容) {
+    constructor(配置内容 = '') {
         this.配置内容 = 配置内容;
     }
 
@@ -25,9 +25,9 @@ export default class 配置 {
                 this.配置项[配置项] = {};
             } else {
                 let 单行分割 = 单行.split("=");
-                let 键 = 单行分割.shift().trim();
+                let 属性名 = 单行分割.shift().trim();
                 let 值 = 单行分割.join('=').trim();
-                this.配置项[配置项][键] = 值;
+                this.配置项[配置项][属性名] = 值;
             }
         }
     }
@@ -36,17 +36,65 @@ export default class 配置 {
         return this.配置项[配置项];
     }
 
-    添加属性值(配置项, 键, 值) {
+    添加属性值(配置项, 属性名, 值) {
         if (!this.配置项[配置项]) { this.配置项[配置项] = {}; }
-        this.配置项[配置项][键] = 值;
+        this.配置项[配置项][属性名] = 值;
         this.编辑过的配置项.add(配置项);
 
     }
 
-    修改属性值(配置项, 键, 值) {
-        if (!this.配置项[配置项]) { this.配置项[配置项] = {}; }
-        this.配置项[配置项][键] = 值;
+    删除属性值(配置项, 属性名) {
+        if (!this.配置项[配置项] || !this.配置项[配置项][属性名]) {
+            return false;
+        }
+        delete this.配置项[配置项][属性名]
         this.编辑过的配置项.add(配置项);
+        return true;
+    }
+
+    修改属性值(配置项, 属性名, 值) {
+        if (!this.配置项[配置项]) { this.配置项[配置项] = {}; }
+        this.配置项[配置项][属性名] = 值;
+        this.编辑过的配置项.add(配置项);
+    }
+
+    生成配置文件() {
+        let 配置内容 = "";
+        for (let 配置项 of Object.keys(this.配置项)) {
+            配置内容 += "[" + 配置项 + "]\n";
+            for (let 属性名 of Object.keys(this.配置项[配置项])) {
+                配置内容 += 属性名 + "=" + this.配置项[配置项][属性名] + "\n";
+            }
+        }
+        return 配置内容;
+    }
+
+    获取更新后的配置内容() {
+
+
+    }
+
+    获取配置项的所有属性名(配置项) {
+        return Object.keys(this.配置项[配置项]);
+    }
+
+    拼接配置项的值(配置项) {
+        let 配置项内容 = "";
+        for (let 属性名 of Object.keys(this.配置项[配置项])) {
+            配置项内容 += this.配置项[配置项][属性名] + "\n";
+        }
+        return 配置项内容;
+    }
+
+    static 合并配置(配置1, 配置2) {
+        let 合并后的配置 = new 配置("");
+        合并后的配置.配置项 = JSON.parse(JSON.stringify(配置1.配置项));
+        for (let 配置项 of 配置2.配置项) {
+            for (let 属性名 of Object.keys(配置2.配置项[配置项])) {
+                合并后的配置.配置项[配置项][属性名] = 配置2.配置项[配置项][属性名];
+            }
+        }
+        return 合并后的配置;
     }
 
 }

@@ -1,6 +1,8 @@
 <script>
 import 界面助手 from '../第三方模块/element-plus/界面助手.mjs';
 import 地图 from '../类库/地图.mjs';
+import 事件 from '../类库/地图/事件.mjs';
+import 动作 from '../类库/地图/动作.mjs';
 import 消息隧道 from '../类库/消息隧道.mjs';
 import 目录 from '../类库/目录.mjs';
 export default 视图.创建组件({
@@ -13,10 +15,19 @@ export default 视图.创建组件({
         选择地图文件对话框: false,
         地图文件名列表: []
     },
-    挂载() {
-        this.显示选择地图目录对话框();
+    async 挂载() {
+        var 上次选择 = await this.显示上次选择的项目目录();
+        if (!上次选择) {
+            this.显示选择地图目录对话框();
+        }
     },
     方法: {
+        async 显示上次选择的项目目录() {
+            // this.项目目录 = 目录.打开目录();
+            // this.选择目录();
+
+            return false;
+        },
         显示选择地图目录对话框() {
             界面助手.弹窗提示用户('提示', '请选择地图所在的目录, 选择后会自动识别地图文件.', () => {
                 this.选择目录();
@@ -24,6 +35,9 @@ export default 视图.创建组件({
         },
         async 选择目录() {
             this.项目目录 = await 目录.打开目录();
+            if (!this.项目目录) {
+                return;
+            }
             var 文件列表 = await this.项目目录.获取子文件列表();
             this.地图文件列表 = 文件列表.filter(文件 => ['yrm', 'mpr'].includes(文件.扩展名));
 
@@ -48,22 +62,32 @@ export default 视图.创建组件({
             });
             this.选择地图文件对话框 = true;
         },
-        指定地图文件(地图文件) {
+        async 指定地图文件(地图文件) {
             if (typeof 地图文件 == 'string') {
                 this.选中的地图 = this.地图文件列表.find(文件 => 文件.文件名 == 地图文件);
             } else {
                 this.选中的地图 = 地图文件;
             }
+            var 选择的地图 = new 地图(this.选中的地图);
+            await 选择的地图.加载地图(await this.选中的地图.读取内容());
             var 消息内容 = {
                 消息类型: "用户选择地图",
                 地图文件: this.选中的地图,
                 项目目录: this.项目目录,
-                地图: new 地图(this.选中的地图)
+                地图: 选择的地图
             }
             window.地图文件 = this.选中的地图;
             window.项目目录 = this.项目目录;
             new 消息隧道("事件").发送消息(消息内容);
             this.选择地图文件对话框 = false;
+
+            // console.log("地图数据: ", 选择的地图.获取地图数据());
+            // console.log("缩略图数据: ", atob(选择的地图.获取缩略图数据()));
+            // console.log("所有触发器: ", 选择的地图.获取所有触发器());
+            console.log('删除前的触发器: ', {...选择的地图.地图数据.获取配置项('Triggers')})
+            选择的地图.删除触发器('01000000');
+            console.log('删除后的触发器: ', {...选择的地图.地图数据.获取配置项('Triggers')})
+
         }
     }
 });

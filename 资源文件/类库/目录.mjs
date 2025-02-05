@@ -59,4 +59,16 @@ export default class 目录 {
         return this.句柄.name;
     }
 
+    async 获取所有子文件名字() {
+        var 文件名列表 = [];
+        for await (var 文件名 of this.句柄.keys()) {
+            文件名列表.push(文件名);
+        }
+        return 文件名列表;
+    }
+
+    static async 获取缓存目录() {
+        return navigator.storage.getDirectory('缓存');
+    }
+
 }

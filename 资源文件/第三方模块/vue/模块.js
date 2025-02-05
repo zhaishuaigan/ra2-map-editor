@@ -1,3 +1,4 @@
+import 中文组件名转换 from '../../类库/中文组件名转换.mjs';
 import { loadModule } from './vue3-sfc-loader.esm.js'
 export default class 模块 {
     static 获取配置() {
@@ -11,8 +12,12 @@ export default class 模块 {
                     throw Object.assign(new Error(url + ' ' + res.statusText), { res });
                 }
                 var resText = await res.text();
-                resText = resText.replace(/\<([\u4e00-\u9fa5])/g, "<View$1");
-                resText = resText.replace(/\<\/([\u4e00-\u9fa5])/g, "</View$1");
+                resText = resText.replace(/\<([\u4e00-\u9fa5]+)/g, (参数, 标签) => {
+                    return "<View_" + 中文组件名转换.中文转编码(标签);
+                });
+                resText = resText.replace(/\<\/([\u4e00-\u9fa5]+)/g,  (参数, 标签) => {
+                    return "</View_" + 中文组件名转换.中文转编码(标签);
+                });
                 return resText;
             },
             addStyle(textContent) {
@@ -27,6 +32,7 @@ export default class 模块 {
             },
             compiledCache: {
                 set(key, str) {
+                    console.log("缓存模板: ", key, str);
                     window.localStorage.setItem(key, str);
                 },
                 get(key) {
@@ -36,6 +42,9 @@ export default class 模块 {
             handleModule(type, source, path, options) {
                 if (type === '.json') {
                     return JSON.parse(source);
+                }
+                if (type === '.ini') {
+                    return source;
                 }
             }
         }

@@ -69,12 +69,57 @@ export default 视图.创建组件({
 
 });
 </script>
+
+<style>
+.小地图展示区域 {
+    position: absolute;
+    left: 14px;
+    top: 3px;
+    width: 140px;
+    height: 108px;
+    overflow: hidden;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.小地图展示区域 .盒子 {
+    max-width: 100%;
+    max-height: 100%;
+    position: relative;
+}
+
+.小地图展示区域 img {
+    max-width: 100%;
+    max-height: 100%;
+    display: block;
+    border: 1px solid #ffff00;
+    box-sizing: border-box;
+}
+
+.小地图展示区域 .盒子 {
+    --left: 0px;
+    --top: 0px;
+    --width: 30px;
+    --height: 20px;
+}
+
+.小地图展示区域 .盒子::after {
+    width: var(--width);
+    height: var(--height);
+    position: absolute;
+    content: '';
+    left: var(--left);
+    top: var(--top);
+    border: 1px solid #ffff00;
+    pointer-events: none;
+}
+</style>
 <template>
-    <div class="smallMap">
-        <div class="box">
-            <div class="panel" ref="小地图">
-                <img :src="'./资源文件/测试文件/不公平的熬鹰地时间.png'" @click="点击小地图" alt="">
-            </div>
+    <div class="小地图展示区域">
+        <div class="盒子" ref="小地图">
+            <img :src="'./资源文件/测试文件/不公平的熬鹰地时间.png'" @click="点击小地图" alt="">
         </div>
     </div>
+
 </template>
