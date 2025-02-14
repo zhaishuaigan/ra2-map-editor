@@ -12,7 +12,7 @@ export default 视图.创建组件({
 
 <template>
     <div>
-        <img :src="单位.图标" alt="">
+        <img :src="数据.图标" alt="">
     </div>
 
 </template>

@@ -7,7 +7,10 @@ export default class 模块 {
                 vue: Vue,
             },
             async getFile(url) {
-                const res = await fetch('./资源文件/界面/' + url);
+                var 界面地址 = './资源文件/界面/' + url;
+                界面地址 = 界面地址.replace(/\/[^\/]*\/\.\.\//, '/');
+                console.log("加载界面: " + 界面地址);
+                const res = await fetch(界面地址);
                 if (!res.ok) {
                     throw Object.assign(new Error(url + ' ' + res.statusText), { res });
                 }
@@ -15,13 +18,12 @@ export default class 模块 {
                 resText = resText.replace(/\<([\u4e00-\u9fa5]+)/g, (参数, 标签) => {
                     return "<View_" + 中文组件名转换.中文转编码(标签);
                 });
-                resText = resText.replace(/\<\/([\u4e00-\u9fa5]+)/g,  (参数, 标签) => {
+                resText = resText.replace(/\<\/([\u4e00-\u9fa5]+)/g, (参数, 标签) => {
                     return "</View_" + 中文组件名转换.中文转编码(标签);
                 });
                 return resText;
             },
             addStyle(textContent) {
-                console.log(textContent);
                 const style = Object.assign(document.createElement('style'), { textContent });
                 const ref = document.head.getElementsByTagName('style')[0] || null;
                 document.head.insertBefore(style, ref);
@@ -32,7 +34,7 @@ export default class 模块 {
             },
             compiledCache: {
                 set(key, str) {
-                    console.log("缓存模板: ", key, str);
+                    // console.log("缓存模板: ", key, str);
                     window.localStorage.setItem(key, str);
                 },
                 get(key) {
