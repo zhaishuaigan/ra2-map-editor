@@ -9,7 +9,6 @@ export default class 模块 {
             async getFile(url) {
                 var 界面地址 = './资源文件/界面/' + url;
                 界面地址 = 界面地址.replace(/\/[^\/]*\/\.\.\//, '/');
-                console.log("加载界面: " + 界面地址);
                 const res = await fetch(界面地址);
                 if (!res.ok) {
                     throw Object.assign(new Error(url + ' ' + res.statusText), { res });
@@ -54,6 +53,11 @@ export default class 模块 {
 
     static 异步加载(路径) {
         路径 += '.vue';
-        return Vue.defineAsyncComponent(() => loadModule(路径, 模块.获取配置()));
+        try {
+            return Vue.defineAsyncComponent(() => loadModule(路径, 模块.获取配置()));
+        } catch (e) {
+            console.error("加载模块出错: ", e);
+        }
+
     }
 }

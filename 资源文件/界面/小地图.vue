@@ -13,8 +13,20 @@ export default 视图.创建组件({
     方法: {
         监听地图偏移消息() {
             消息服务.监听消息((消息) => {
-                if (消息.类型 = "大地图偏移") {
-                    this.设置小地图聚焦点(消息.左边偏移百分比, 消息.上边偏移百分比);
+                switch (消息.消息类型) {
+                    case "大地图偏移":
+                        this.设置小地图聚焦点(消息.左边偏移百分比, 消息.上边偏移百分比);
+                        break;
+                    case "地图区域大小改变":
+                        var 缩放比例 = {
+                            宽度: 消息.可视宽度 / 消息.实际宽度,
+                            高度: 消息.可视高度 / 消息.实际高度
+                        };
+                        var 小地图 = this.$refs.小地图;
+                        var 小地图宽度 = 小地图.offsetWidth;
+                        var 小地图高度 = 小地图.offsetHeight;
+                        this.设置聚焦框的大小(小地图宽度 * 缩放比例.宽度, 小地图高度 * 缩放比例.高度);
+                        break;
                 }
             });
         },
@@ -25,19 +37,24 @@ export default 视图.创建组件({
             var 小地图宽度 = e.target.offsetWidth;
             var 小地图高度 = e.target.offsetHeight;
 
-            var 新坐标X = 点击坐标X - 15;
-            var 新坐标Y = 点击坐标Y - 10;
+            var 聚焦框 = {
+                宽度: parseInt(小地图.style.getPropertyValue('--width')),
+                高度: parseInt(小地图.style.getPropertyValue('--height'))
+            };
+
+            var 新坐标X = 点击坐标X - 聚焦框.宽度 / 2;
+            var 新坐标Y = 点击坐标Y - 聚焦框.高度 / 2;
             if (新坐标X < 0) {
                 新坐标X = 0;
             }
             if (新坐标Y < 0) {
                 新坐标Y = 0;
             }
-            if (新坐标X > 小地图宽度 - 30) {
-                新坐标X = 小地图宽度 - 30;
+            if (新坐标X > 小地图宽度 - 聚焦框.宽度) {
+                新坐标X = 小地图宽度 - 聚焦框.宽度;
             }
-            if (新坐标Y > 小地图高度 - 20) {
-                新坐标Y = 小地图高度 - 20;
+            if (新坐标Y > 小地图高度 - 聚焦框.高度) {
+                新坐标Y = 小地图高度 - 聚焦框.高度;
             }
             小地图.style.setProperty('--left', 新坐标X + 'px');
             小地图.style.setProperty('--top', 新坐标Y + 'px');
@@ -50,19 +67,21 @@ export default 视图.创建组件({
             if (上边偏移百分比 < 0) {
                 上边偏移百分比 = 0;
             }
-            this.消息隧道.发送消息({
+            消息服务.发送消息({
                 消息类型: '小地图偏移',
                 左边偏移百分比,
                 上边偏移百分比
             });
         },
         设置小地图聚焦点(左边偏移百分比, 上边偏移百分比) {
-            var 小地图 = this.$refs.小地图
+            var 小地图 = this.$refs.小地图;
             小地图.style.setProperty('--left', 左边偏移百分比 + '%');
             小地图.style.setProperty('--top', 上边偏移百分比 + '%');
         },
-        设置聚焦框的大小() {
-
+        设置聚焦框的大小(宽度, 高度) {
+            var 小地图 = this.$refs.小地图;
+            小地图.style.setProperty('--width', 宽度 + 'px');
+            小地图.style.setProperty('--height', 高度 + 'px');
         }
     }
 
@@ -112,6 +131,7 @@ export default 视图.创建组件({
     top: var(--top);
     border: 1px solid #ffff00;
     pointer-events: none;
+    box-sizing: border-box;
 }
 </style>
 <template>

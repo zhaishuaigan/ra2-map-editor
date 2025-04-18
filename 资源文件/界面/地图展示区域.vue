@@ -10,15 +10,43 @@ export default 视图.创建组件({
         // console.log('地图展示区加载完成');
         this.绑定地图平移事件();
         this.绑定消息处理事件();
+        this.绑定窗口大小改变事件();
     },
     方法: {
-        居中显示地图() {
+        绑定窗口大小改变事件() {
+            window.addEventListener('resize', () => {
+                this.发送地图区域大小改变()
+            });
+        },
+        发送地图区域大小改变() {
+            var 地图区域 = this.$refs.地图区域;
+            var 实际宽度 = 地图区域.scrollWidth;
+            var 实际高度 = 地图区域.scrollHeight;
+            var 可视宽度 = 地图区域.offsetWidth;
+            var 可视高度 = 地图区域.offsetHeight;
+            this.消息隧道.发送消息({
+                消息类型: '地图区域大小改变',
+                实际宽度,
+                实际高度,
+                可视宽度,
+                可视高度
+            });
+        },
+        地图加载完成() {
             setTimeout(() => {
-                this.移动视角(40, 40);
+                this.发送地图区域大小改变();
+                var 地图区域 = this.$refs.地图区域;
+                var 实际宽度 = 地图区域.scrollWidth;
+                var 实际高度 = 地图区域.scrollHeight;
+                var 可视宽度 = 地图区域.offsetWidth;
+                var 可视高度 = 地图区域.offsetHeight;
+                var 左边偏移百分比 = (实际宽度 - 可视宽度) / 2 / 实际宽度 * 100;
+                var 上边偏移百分比 = (实际高度 - 可视高度) / 2 / 实际高度 * 100;
+                this.移动视角(左边偏移百分比, 上边偏移百分比);
                 this.消息隧道.发送消息({
                     消息类型: '大地图偏移',
-                    左边偏移百分比: 40,
-                    上边偏移百分比: 40
+                    左边偏移百分比: 左边偏移百分比,
+                    上边偏移百分比: 上边偏移百分比
                 });
             }, 1000);
         },
@@ -65,6 +93,8 @@ export default 视图.创建组件({
                     鼠标右键被按下 = true;
                     开始坐标X = e.clientX;
                     开始坐标Y = e.clientY;
+                    // 把鼠标改成移动样式
+                    地图区域.style.cursor = 'move';
                 }
             });
             var 右键按下移动鼠标的定时器 = null;
@@ -160,6 +190,7 @@ export default 视图.创建组件({
                     }
                     鼠标右键被按下 = false;
                 }
+                地图区域.style.cursor = 'auto';
             });
 
         }
@@ -172,7 +203,7 @@ export default 视图.创建组件({
 <template>
     <div class="map">
         <div class="box" ref="地图区域">
-            <img :src="预览图地址" alt="" @load="居中显示地图">
+            <img :src="预览图地址" alt="" @load="地图加载完成">
         </div>
     </div>
 </template>
