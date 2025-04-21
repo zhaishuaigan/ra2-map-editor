@@ -1,17 +1,39 @@
 import 单位 from "./地图/单位.mjs";
 import 配置 from "./配置.mjs";
 export default class 地图 {
-    地图数据 = new 配置();
-    原始数据 = new 配置();
-    动画数据 = new 配置();
+    版本 = "尤里的复仇";
+    地图文件 = null;
+    合并后的数据 = {
+        地图数据: new 配置(),
+        动画数据: new 配置(),
+    };
+    默认配置 = new 配置();
+    动画配置 = new 配置();
 
-    constructor(地图数据, 原始数据, 动画数据) {
-
+    constructor(地图目录, 地图文件, 版本 = "尤里的复仇") {
+        this.版本 = 版本;
+        this.地图目录 = 地图目录;
+        this.地图文件 = 地图文件;
     }
 
-    async 加载地图(地图数据) {
-        this.地图数据 = new 配置(地图数据);
+    async 加载地图() {
+        var 地图文件内容 = await this.地图文件.读取内容();
+        var 自定义动画内容 = "";
+        // TODO:: 未来实现自定义动画
+        this.地图数据 = new 配置(地图文件内容);
+        var 默认配置内容 = await 地图.加载默认配置(this.版本, 'rulesmd');
+        var 动画配置内容 = await 地图.加载默认配置(this.版本, 'artmd');
+        this.默认配置 = new 配置(默认配置内容);
+        this.动画配置 = new 配置(动画配置内容);
+
+        this.合并后的数据 = {
+            地图数据: new 配置(默认配置内容 + "\n" + 地图文件内容),
+            动画数据: new 配置(动画配置内容 + "\n" + 自定义动画内容),
+        };
+
         await this.地图数据.异步解析();
+        await this.合并后的数据.地图数据.异步解析();
+        await this.合并后的数据.动画数据.异步解析();
     }
 
     async 加载原始数据(原始数据) {
@@ -49,20 +71,113 @@ export default class 地图 {
         return this.地图数据.配置项['Waypoints'];
     }
 
+    获取所有国家() {
+        return Object.values(this.地图数据.配置项['Countries'])
+
+    }
+
+    获取所有建筑注册名() {
+        return Object.values(this.合并后的数据.地图数据.配置项['BuildingTypes']);
+    }
+
     获取所有建筑() {
-
+        var 所有注册名 = this.获取所有建筑注册名();
+        var 地图数据 = this.合并后的数据.地图数据;
+        var 动画数据 = this.合并后的数据.动画数据;
+        var 返回列表 = [];
+        for (var 注册名 of 所有注册名) {
+            if (!(注册名 in 地图数据.配置项)) {
+                console.warn(`[${注册名}]有注册, 但是没有配置!`);
+                continue;
+            }
+            var 单位配置 = 地图数据.配置项[注册名];
+            var 单位动画 = null;
+            if ('Image' in 单位配置) {
+                单位动画 = 动画数据.配置项[单位配置.Image];
+            } else if (注册名 in 动画数据.配置项) {
+                单位动画 = 动画数据.配置项[注册名];
+            } else {
+                console.warn(`[${注册名}]没有动画配置!`);
+                continue;
+            }
+            返回列表.push(new 单位(注册名, 单位配置, 单位动画));
+        }
+        return 返回列表;
     }
 
-    获取所有防御设施() {
-
+    获取建筑栏的单位() {
+        var 所有建筑 = this.获取所有建筑();
+        var 建筑栏单位列表 = [];
+        for (var 建筑 of 所有建筑) {
+            if (建筑.属性.BuildCat && 建筑.属性.BuildCat != 'Combat') {
+                建筑栏单位列表.push(建筑);
+            }
+        }
+        return 建筑栏单位列表;
     }
 
-    获取所有步兵() {
-
+    获取防御栏的单位() {
+        var 所有建筑 = this.获取所有建筑();
+        var 建筑栏单位列表 = [];
+        for (var 建筑 of 所有建筑) {
+            if (建筑.属性.BuildCat == 'Combat') {
+                建筑栏单位列表.push(建筑);
+            }
+        }
+        return 建筑栏单位列表;
     }
 
-    获取所有战车和飞机() {
+    获取步兵栏的单位() {
+        var 所有注册名 = Object.values(this.合并后的数据.地图数据.配置项['InfantryTypes']);
+        var 地图数据 = this.合并后的数据.地图数据;
+        var 动画数据 = this.合并后的数据.动画数据;
+        var 返回列表 = [];
+        for (var 注册名 of 所有注册名) {
+            if (!(注册名 in 地图数据.配置项)) {
+                console.warn(`[${注册名}]有注册, 但是没有配置!`);
+                continue;
+            }
+            var 单位配置 = 地图数据.配置项[注册名];
+            var 单位动画 = null;
+            if ('Image' in 单位配置) {
+                单位动画 = 动画数据.配置项[单位配置.Image];
+            } else if (注册名 in 动画数据.配置项) {
+                单位动画 = 动画数据.配置项[注册名];
+            } else {
+                console.warn(`[${注册名}]没有动画配置!`);
+                continue;
+            }
+            返回列表.push(new 单位(注册名, 单位配置, 单位动画));
+        }
+        return 返回列表;
+    }
 
+    获取战车栏的单位() {
+        var 所有注册名 = [
+            ...Object.values(this.合并后的数据.地图数据.配置项['VehicleTypes']),
+            ...Object.values(this.合并后的数据.地图数据.配置项['AircraftTypes']),
+        ];
+        var 地图数据 = this.合并后的数据.地图数据;
+        var 动画数据 = this.合并后的数据.动画数据;
+        var 返回列表 = [];
+        for (var 注册名 of 所有注册名) {
+            if (!(注册名 in 地图数据.配置项)) {
+                console.warn(`[${注册名}]有注册, 但是没有配置!`);
+                continue;
+            }
+            var 单位配置 = 地图数据.配置项[注册名];
+            var 单位动画 = null;
+            if ('Image' in 单位配置) {
+                单位动画 = 动画数据.配置项[单位配置.Image];
+            } else if (注册名 in 动画数据.配置项) {
+                单位动画 = 动画数据.配置项[注册名];
+            } else {
+                console.warn(`[${注册名}]没有动画配置!`);
+                continue;
+            }
+            返回列表.push(new 单位(注册名, 单位配置, 单位动画));
+        }
+        return 返回列表;
     }
 
     /* 触发相关 */
@@ -155,11 +270,16 @@ export default class 地图 {
     }
 
     生成渲染图() {
-        var 数据 = this.地图数据
     }
 
     生成缩略图(最大宽度, 最大高度) {
 
+    }
+
+    static async 加载默认配置(版本, 配置名) {
+        var 返回值 = await fetch(`/资源文件/配置/默认配置/${版本}/${配置名}.ini`);
+        返回值 = await 返回值.text();
+        return 返回值;
     }
 
 

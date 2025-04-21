@@ -1,10 +1,9 @@
 <script>
 import 界面助手 from '../第三方模块/element-plus/界面助手.mjs';
 import 地图 from '../类库/地图.mjs';
-import 事件 from '../类库/地图/事件.mjs';
-import 动作 from '../类库/地图/动作.mjs';
 import 消息隧道 from '../类库/消息隧道.mjs';
 import 目录 from '../类库/目录.mjs';
+import 配置 from '../类库/配置.mjs';
 
 var 项目 = {
     项目目录: null,
@@ -17,17 +16,31 @@ export default 视图.创建组件({
         地图文件名列表: []
     },
     async 挂载() {
-        var 上次选择 = await this.显示上次选择的项目目录();
-        if (!上次选择) {
+
+
+        var 测试 = await this.测试();
+        if (!测试) {
             this.显示选择地图目录对话框();
         }
+
+
+        消息隧道.数据服务(this);
+        消息隧道.事件服务(this);
     },
     方法: {
-        async 显示上次选择的项目目录() {
-            // this.项目目录 = 目录.打开目录();
-            // this.选择目录();
+        async 测试() {
 
-            return false;
+            var 字库内容 = await 地图.加载默认配置('尤里的复仇', 'ra2md');
+            window.字库 = new 配置(字库内容);
+            await window.字库.异步解析();
+
+            window.项目 = null;
+            window.选择的地图 = new 地图(window.项目, { 读取内容: function () { return ''; } });
+            await window.选择的地图.加载地图();
+            消息隧道.设置数据({
+                已选择地图: true
+            });
+            return true;
         },
         显示选择地图目录对话框() {
             界面助手.弹窗提示用户('提示', '请选择地图所在的目录, 选择后会自动识别地图文件.', () => {
@@ -40,7 +53,7 @@ export default 视图.创建组件({
                 return;
             }
             var 文件列表 = await 项目.项目目录.获取子文件列表();
-            项目.地图文件列表 = 文件列表.filter(文件 => ['yrm', 'mpr'].includes(文件.扩展名));
+            项目.地图文件列表 = 文件列表.filter(文件 => ['yrm', 'mpr', 'map'].includes(文件.扩展名));
 
             switch (项目.地图文件列表.length) {
                 case 0:
@@ -69,25 +82,26 @@ export default 视图.创建组件({
             } else {
                 项目.选中的地图 = 地图文件;
             }
-            var 选择的地图 = new 地图(项目.选中的地图);
-            await 选择的地图.加载地图(await 项目.选中的地图.读取内容());
+            var 选择的地图 = new 地图(项目.项目目录, 项目.选中的地图);
+            await 选择的地图.加载地图();
             var 消息内容 = {
                 消息类型: "用户选择地图",
-                地图文件: 项目.选中的地图,
-                项目目录: 项目.项目目录,
-                地图: 选择的地图
+                已选择地图: true
             }
-            window.地图文件 = 项目.选中的地图;
-            window.项目目录 = 项目.项目目录;
-            (new 消息隧道("事件")).发送消息(消息内容);
+            window.选择的地图 = 选择的地图;
+            window.项目 = 项目;
+            消息隧道.设置数据(消息内容);
             this.选择地图文件对话框 = false;
-
             // console.log("地图数据: ", 选择的地图.获取地图数据());
             // console.log("缩略图数据: ", atob(选择的地图.获取缩略图数据()));
             // console.log("所有触发器: ", 选择的地图.获取所有触发器());
             // console.log('删除前的触发器: ', { ...选择的地图.地图数据.获取配置项('Triggers') })
             // 选择的地图.删除触发器('01000000');
             // console.log('删除后的触发器: ', { ...选择的地图.地图数据.获取配置项('Triggers') })
+            // console.log('获取建筑栏的单位: ', await 选择的地图.获取建筑栏的单位())
+            // console.log('获取防御栏的单位: ', await 选择的地图.获取防御栏的单位())
+            // console.log('获取步兵栏的单位: ', await 选择的地图.获取步兵栏的单位())
+            // console.log('获取战车栏的单位: ', await 选择的地图.获取战车栏的单位())
 
         }
     }

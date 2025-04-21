@@ -17,7 +17,7 @@ export default class 配置 {
         let 所有行 = this.配置内容.split("\n");
         let 配置项 = "";
         for (let 单行 of 所有行) {
-            单行 = 单行.trim();
+            单行 = 单行.replace(/\;.*/, '').trim();
             if (单行.length == 0) continue;
             if (单行.startsWith(";") || 单行.startsWith("#")) continue;
             if (单行.startsWith("[")) {

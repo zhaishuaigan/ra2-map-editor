@@ -1,13 +1,39 @@
 <script>
-
+import 消息隧道 from '../类库/消息隧道.mjs';
 export default 视图.创建组件({
     组件: ['小地图', '单位'],
     数据: {
+        选中类型: "建筑",
+        单位列表: [],
+        显示不可建造单位: false,
         消息隧道: null
     },
     挂载() {
+        消息隧道.监听数据('已选择地图', (数据) => {
+            this.切换列表('建筑');
+        });
     },
     方法: {
+        async 切换列表(类型) {
+            this.选中类型 = 类型;
+            switch (类型) {
+                case "建筑":
+                    this.单位列表 = await window.选择的地图.获取建筑栏的单位();
+                    break;
+                case "防御":
+                    this.单位列表 = await window.选择的地图.获取防御栏的单位();
+                    break;
+                case "步兵":
+                    this.单位列表 = await window.选择的地图.获取步兵栏的单位();
+                    break;
+                case "战车":
+                    this.单位列表 = await window.选择的地图.获取战车栏的单位();
+                    break;
+            }
+        },
+        显示选择项目() {
+            消息隧道.触发事件({ 显示选择地图目录对话框: true });
+        }
     }
 
 });
@@ -122,7 +148,7 @@ export default 视图.创建组件({
 }
 
 .列表切换 .步兵按钮:hover,
-.列表切换 .战车按钮.选中 {
+.列表切换 .步兵按钮.选中 {
     background-position: -84px -196px;
 }
 
@@ -139,7 +165,24 @@ export default 视图.创建组件({
 
 .单位列表 {
     flex: auto;
+    display: flex;
+    flex-wrap: wrap;
     background-image: url(./资源文件/图片/单位列表背景.png);
+    background-attachment: scroll;
+    overflow: scroll;
+    padding-left: 20px;
+}
+
+.单位图标 {
+    width: 60px;
+    height: 48px;
+    overflow: visible;
+    margin-left: 2px;
+    margin-top: 2px;
+}
+
+.单位列表::-webkit-scrollbar {
+    display: none;
 }
 
 .底部 {
@@ -152,7 +195,7 @@ export default 视图.创建组件({
         <div class="设置">
             <div class="金钱">10000</div>
             <div class="联盟与设置">
-                <div class="按钮 联盟按钮"></div>
+                <div class="按钮 联盟按钮" @click="显示选择项目()"></div>
                 <div class="按钮 设置按钮"></div>
             </div>
             <div class="小地图区域">
@@ -163,15 +206,19 @@ export default 视图.创建组件({
                 <div class="按钮 变卖按钮"></div>
             </div>
             <div class="列表切换">
-                <div class="按钮 建筑按钮 选中"></div>
-                <div class="按钮 防御按钮"></div>
-                <div class="按钮 步兵按钮"></div>
-                <div class="按钮 战车按钮"></div>
+                <div class="按钮 建筑按钮" :class="[选中类型 === '建筑' ? '选中' : '']" @click="切换列表('建筑')"></div>
+                <div class="按钮 防御按钮" :class="[选中类型 === '防御' ? '选中' : '']" @click="切换列表('防御')"></div>
+                <div class="按钮 步兵按钮" :class="[选中类型 === '步兵' ? '选中' : '']" @click="切换列表('步兵')"></div>
+                <div class="按钮 战车按钮" :class="[选中类型 === '战车' ? '选中' : '']" @click="切换列表('战车')"></div>
             </div>
         </div>
 
         <div class="单位列表">
-            <单位 :数据="{图标: ''}" />
+            <template v-for="单位配置 in 单位列表">
+                <div class="单位图标" v-if="单位配置.可以建造">
+                    <单位 :单位配置="单位配置" />
+                </div>
+            </template>
         </div>
         <div class="底部">
 
