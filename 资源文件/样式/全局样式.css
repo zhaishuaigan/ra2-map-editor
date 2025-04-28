@@ -159,3 +159,7 @@ section {
     outline: none;
     resize: none;
 }
+
+.编辑单位属性对话框 .el-dialog__title {
+    padding-left: 70px;
+}

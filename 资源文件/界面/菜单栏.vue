@@ -1,13 +1,13 @@
 <script>
-export default 视图.创建组件({
-    组件: ['触发编辑'],
-    数据: {
-
+export default {
+    components: 视图.加载组件(['触发编辑']),
+    data() {
+        return {};
     },
-    方法: {
+    methods: {
 
     }
-})
+}
 </script>
 <template>
     <footer class="菜单栏">

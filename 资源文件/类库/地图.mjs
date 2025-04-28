@@ -7,6 +7,7 @@ export default class 地图 {
         地图数据: new 配置(),
         动画数据: new 配置(),
     };
+    地图数据 = new 配置();
     默认配置 = new 配置();
     动画配置 = new 配置();
 
@@ -25,7 +26,6 @@ export default class 地图 {
         var 动画配置内容 = await 地图.加载默认配置(this.版本, 'artmd');
         this.默认配置 = new 配置(默认配置内容);
         this.动画配置 = new 配置(动画配置内容);
-
         this.合并后的数据 = {
             地图数据: new 配置(默认配置内容 + "\n" + 地图文件内容),
             动画数据: new 配置(动画配置内容 + "\n" + 自定义动画内容),
@@ -34,6 +34,8 @@ export default class 地图 {
         await this.地图数据.异步解析();
         await this.合并后的数据.地图数据.异步解析();
         await this.合并后的数据.动画数据.异步解析();
+        await this.默认配置.异步解析();
+        await this.动画配置.异步解析();
     }
 
     async 加载原始数据(原始数据) {
@@ -87,7 +89,7 @@ export default class 地图 {
         var 返回列表 = [];
         for (var 注册名 of 所有注册名) {
             if (!(注册名 in 地图数据.配置项)) {
-                console.warn(`[${注册名}]有注册, 但是没有配置!`);
+                // console.warn(`[${注册名}]有注册, 但是没有配置!`);
                 continue;
             }
             var 单位配置 = 地图数据.配置项[注册名];
@@ -127,6 +129,17 @@ export default class 地图 {
         return 建筑栏单位列表;
     }
 
+    获取其他建筑() {
+        var 所有建筑 = this.获取所有建筑();
+        var 建筑列表 = [];
+        for (var 建筑 of 所有建筑) {
+            if (!建筑.属性.BuildCat) {
+                建筑列表.push(建筑);
+            }
+        }
+        return 建筑列表;
+    }
+
     获取步兵栏的单位() {
         var 所有注册名 = Object.values(this.合并后的数据.地图数据.配置项['InfantryTypes']);
         var 地图数据 = this.合并后的数据.地图数据;
@@ -134,7 +147,7 @@ export default class 地图 {
         var 返回列表 = [];
         for (var 注册名 of 所有注册名) {
             if (!(注册名 in 地图数据.配置项)) {
-                console.warn(`[${注册名}]有注册, 但是没有配置!`);
+                // console.warn(`[${注册名}]有注册, 但是没有配置!`);
                 continue;
             }
             var 单位配置 = 地图数据.配置项[注册名];
@@ -162,7 +175,7 @@ export default class 地图 {
         var 返回列表 = [];
         for (var 注册名 of 所有注册名) {
             if (!(注册名 in 地图数据.配置项)) {
-                console.warn(`[${注册名}]有注册, 但是没有配置!`);
+                // console.warn(`[${注册名}]有注册, 但是没有配置!`);
                 continue;
             }
             var 单位配置 = 地图数据.配置项[注册名];
@@ -244,10 +257,12 @@ export default class 地图 {
 
     删除属性值(配置项, 属性名) {
         this.地图数据.删除属性值(配置项, 属性名);
+        this.合并后的数据.地图数据.删除属性值(配置项, 属性名);
     }
 
     修改属性值(配置项, 属性名, 属性值) {
         this.地图数据.修改属性值(配置项, 属性名, 属性值);
+        this.合并后的数据.地图数据.修改属性值(配置项, 属性名, 属性值);
     }
 
     生成一个可用的触发器标识() {
@@ -255,10 +270,10 @@ export default class 地图 {
     }
 
     获取单位(单位注册名) {
-        var 单位数据 = { ...this.合并后的地图数据[单位注册名] }
+        var 单位数据 = { ...this.合并后的数据.地图数据.获取配置项(单位注册名) }
         var 动画注册名 = 单位数据.Image ? 单位数据.Image : 单位注册名;
-        var 动画数据 = { ...this.合并后的动画数据[动画注册名] }
-        return new 单位(单位数据, 动画数据);
+        var 动画数据 = { ...this.合并后的数据.动画数据.获取配置项(动画注册名) }
+        return new 单位(单位注册名, 单位数据, 动画数据);
     }
 
     获取缩略图数据() {
@@ -274,6 +289,45 @@ export default class 地图 {
 
     生成缩略图(最大宽度, 最大高度) {
 
+    }
+
+    有地图配置(注册名, 属性名 = null) {
+        if (!(注册名 in this.地图数据.配置项)) {
+            return false;
+        }
+        if (属性名 === null) {
+            return true;
+        }
+        if (属性名 in this.地图数据.配置项[注册名]) {
+            return true;
+        }
+        return false;
+    }
+
+    有默认配置(注册名, 属性名 = null) {
+        if (!(注册名 in this.默认配置.配置项)) {
+            return false;
+        }
+        if (属性名 === null) {
+            return true;
+        }
+        if (属性名 in this.默认配置.配置项[注册名]) {
+            return true;
+        }
+        return false;
+    }
+
+    获取默认值(注册名, 属性名 = null) {
+        if (!(注册名 in this.默认配置.配置项)) {
+            return null;
+        }
+        if (属性名 === null) {
+            return this.默认配置.配置项[注册名];
+        }
+        if (属性名 in this.默认配置.配置项[注册名]) {
+            return this.默认配置.配置项[注册名][属性名];
+        }
+        return null;
     }
 
     static async 加载默认配置(版本, 配置名) {

@@ -1,13 +1,14 @@
 <script>
-import 消息隧道 from '../类库/消息隧道.mjs';
+export default {
+    data() {
+        return {
+            已选择地图: false,
+            预览图地址: './资源文件/测试文件/不公平的熬鹰地时间.png',
+            消息隧道: null,
+        };
 
-export default 视图.创建组件({
-    数据: {
-        已选择地图: false,
-        预览图地址: './资源文件/测试文件/不公平的熬鹰地时间.png',
-        消息隧道: null,
     },
-    挂载() {
+    mounted() {
         // console.log('地图展示区加载完成');
         this.绑定边界地图平移事件();
         this.绑定右键地图平移事件();
@@ -15,7 +16,7 @@ export default 视图.创建组件({
         this.绑定窗口大小改变事件();
         消息隧道.数据服务(this);
     },
-    方法: {
+    methods: {
         绑定窗口大小改变事件() {
             window.addEventListener('resize', () => {
                 this.发送地图区域大小改变();
@@ -233,7 +234,7 @@ export default 视图.创建组件({
     计算属性: {
 
     },
-});
+};
 </script>
 <template>
     <div class="map">

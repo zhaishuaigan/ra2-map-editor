@@ -21,10 +21,9 @@ export default class 消息隧道 {
     }
 
     static 数据服务(组件) {
-        var 已有属性 = Object.keys(组件);
         new 消息隧道("数据服务").监听消息((数据) => {
             for (var 标识 in 数据) {
-                if (已有属性.indexOf(标识) >= 0) {
+                if (标识 in 组件) {
                     组件[标识] = 数据[标识];
                 }
             }
@@ -44,10 +43,9 @@ export default class 消息隧道 {
     }
 
     static 事件服务(组件) {
-        var 已有事件 = Object.keys(组件);
         (new 消息隧道("事件服务")).监听消息((事件) => {
             for (var 标识 in 事件) {
-                if (已有事件.indexOf(标识) >= 0) {
+                if (标识 in 组件) {
                     if (Array.isArray(事件[标识])) {
                         组件[标识](...事件[标识]);
                     } else {
@@ -58,7 +56,9 @@ export default class 消息隧道 {
         });
     }
 
-    static 触发事件(事件) {
-        new 消息隧道("事件服务").发送消息(事件);
+    static 触发事件(事件名, 参数 = []) {
+        new 消息隧道("事件服务").发送消息({
+            [事件名]: 参数
+        });
     }
 }

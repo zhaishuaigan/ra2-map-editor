@@ -22,6 +22,9 @@ export default class 配置 {
             if (单行.startsWith(";") || 单行.startsWith("#")) continue;
             if (单行.startsWith("[")) {
                 配置项 = 单行.substring(1, 单行.length - 1);
+                if (配置项 in this.配置项) {
+                    continue;
+                }
                 this.配置项[配置项] = {};
             } else {
                 let 单行分割 = 单行.split("=");

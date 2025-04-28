@@ -1,7 +1,6 @@
 <script>
 import 界面助手 from '../第三方模块/element-plus/界面助手.mjs';
 import 地图 from '../类库/地图.mjs';
-import 消息隧道 from '../类库/消息隧道.mjs';
 import 目录 from '../类库/目录.mjs';
 import 配置 from '../类库/配置.mjs';
 
@@ -10,24 +9,41 @@ var 项目 = {
     地图文件列表: [],
     选中的地图: null
 };
-export default 视图.创建组件({
-    数据: {
-        选择地图文件对话框: false,
-        地图文件名列表: []
+export default {
+    data() {
+        return {
+            选择地图文件对话框: false,
+            地图文件名列表: []
+        };
     },
-    async 挂载() {
-
-
+    async mounted() {
         var 测试 = await this.测试();
         if (!测试) {
             this.显示选择地图目录对话框();
         }
-
-
         消息隧道.数据服务(this);
         消息隧道.事件服务(this);
+        this.绑定保存地图事件();
     },
-    方法: {
+    methods: {
+        async 绑定保存地图事件() {
+            // 用户按下 Ctrl + S 保存地图
+            window.addEventListener('keydown', async (e) => {
+                if (e.ctrlKey && e.key == 's') {
+                    e.preventDefault();
+
+                    if (!window.选择的地图) {
+                        return;
+                    }
+                    // await window.选择的地图.保存地图();
+                    this.$message({
+                        message: '保存成功',
+                        type: 'success'
+                    });
+
+                }
+            });
+        },
         async 测试() {
 
             var 字库内容 = await 地图.加载默认配置('尤里的复仇', 'ra2md');
@@ -105,7 +121,7 @@ export default 视图.创建组件({
 
         }
     }
-});
+};
 </script>
 
 <template>

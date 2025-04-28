@@ -1,17 +1,16 @@
 <script>
 import 消息隧道 from '../类库/消息隧道.mjs';
-var 数据服务 = new 消息隧道("设置数据");
-export default 视图.创建组件({
-    组件: ['地图展示区域', '菜单栏', '右侧工具栏', '选择项目'],
-    数据: {
+export default {
+    components: 视图.加载组件(['地图展示区域', '菜单栏', '右侧工具栏', '选择项目']),
+    data() {
+        return {};
     },
-    挂载() {
-        数据服务.监听消息((数据) => {
-        });
-
+    mounted() {
+        消息隧道.数据服务(this);
+        消息隧道.事件服务(this);
     },
-    方法: {}
-});
+    methods: {}
+};
 </script>
 
 <template>

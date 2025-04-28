@@ -1,43 +1,219 @@
 <script>
-import 消息隧道 from '../类库/消息隧道.mjs';
-export default 视图.创建组件({
-    组件: ['小地图', '单位'],
-    数据: {
-        选中类型: "建筑",
-        单位列表: [],
-        显示不可建造单位: false,
-        消息隧道: null
+export default {
+    components: 视图.加载组件(['小地图', '编辑单位对话框', '单位']),
+    data() {
+        return {
+            选中类型: "建筑",
+            搜索: '',
+            单位列表: [],
+            只显示可建造单位: true,
+            显示其他建筑: false,
+            其他建筑列表: [],
+            消息隧道: null,
+            显示单位编辑器: false,
+            编辑单位: null,
+            默认图片: '/资源文件/图片/单位图标/xxicon.png',
+            加载更多: null,
+        };
     },
-    挂载() {
-        消息隧道.监听数据('已选择地图', (数据) => {
+    mounted() {
+        消息隧道.监听数据('已选择地图', async (数据) => {
             this.切换列表('建筑');
         });
     },
-    方法: {
+    methods: {
+        async 显示搜索框() {
+            // 使用element-plus弹出一个用户输入框
+            this.$prompt('请输入搜索内容', '搜索单位', {
+                confirmButtonText: '确定',
+                cancelButtonText: '取消',
+                inputPattern: /^[a-zA-Z0-9\u4e00-\u9fa5]+$/,
+                inputErrorMessage: '请输入正确的搜索内容',
+            }).then(async ({ value }) => {
+                this.搜索 = value;
+                console.log(this.搜索);
+                this.切换列表(this.选中类型);
+            }).catch(() => { })
+
+        },
+        async 取消搜索() {
+            this.搜索 = '';
+            this.切换列表(this.选中类型);
+        },
         async 切换列表(类型) {
+            if (this.加载更多) {
+                clearInterval(this.加载更多);
+                this.加载更多 = null;
+            }
+            this.单位列表 = [];
             this.选中类型 = 类型;
+            var 单位列表 = [];
             switch (类型) {
                 case "建筑":
-                    this.单位列表 = await window.选择的地图.获取建筑栏的单位();
+                    var 建筑列表 = await window.选择的地图.获取建筑栏的单位()
+                    if (this.显示其他建筑) {
+                        单位列表 = [...建筑列表, ...window.选择的地图.获取其他建筑()]
+                    } else {
+                        单位列表 = 建筑列表;
+                    }
                     break;
                 case "防御":
-                    this.单位列表 = await window.选择的地图.获取防御栏的单位();
+                    单位列表 = await window.选择的地图.获取防御栏的单位();
                     break;
                 case "步兵":
-                    this.单位列表 = await window.选择的地图.获取步兵栏的单位();
+                    单位列表 = await window.选择的地图.获取步兵栏的单位();
                     break;
                 case "战车":
-                    this.单位列表 = await window.选择的地图.获取战车栏的单位();
+                    单位列表 = await window.选择的地图.获取战车栏的单位();
                     break;
             }
+            if (this.搜索 != '') {
+                console.log('搜索:', this.搜索);
+                单位列表 = 单位列表.filter((单位) => {
+                    console.log('搜索:', 单位.显示名, 单位.注册名);
+                    return 单位.显示名.includes(this.搜索) || 单位.注册名.includes(this.搜索);
+                });
+            }
+
+            if (this.只显示可建造单位) {
+                单位列表 = 单位列表.filter((单位) => {
+                    return 单位.可以建造;
+                });
+            }
+
+
+            var 新增单位列表 = [];
+            var 修改单位列表 = [];
+            var 其他单位列表 = [];
+            for (let 单位 of 单位列表) {
+                if (单位.新添加) {
+                    新增单位列表.push(单位);
+                } else if (单位.已被修改) {
+                    修改单位列表.push(单位);
+                } else {
+                    其他单位列表.push(单位);
+                }
+            }
+            单位列表 = [...新增单位列表, ...修改单位列表, ...其他单位列表];
+
+            if (单位列表.length < 30) {
+                this.单位列表 = 单位列表;
+                return;
+            }
+
+
+            this.加载更多 = setInterval(() => {
+                for (let i = 0; i < 10; i++) {
+                    if (单位列表.length) {
+                        this.单位列表.push(单位列表.shift());
+                    }
+                }
+            }, 100);
+        },
+        设置显示其他建筑() {
+            this.显示其他建筑 = true;
+            this.切换列表(this.选中类型);
+        },
+        设置不显示其他建筑() {
+            this.显示其他建筑 = false;
+            this.切换列表(this.选中类型);
+        },
+        设置只显示可建造单位() {
+            this.只显示可建造单位 = true;
+            this.切换列表(this.选中类型);
+        },
+        设置显示所有单位() {
+            this.只显示可建造单位 = false;
+            this.切换列表(this.选中类型);
+        },
+        显示编辑单位对话框(编辑单位) {
+            this.显示单位编辑器 = true;
+            this.编辑单位 = 编辑单位;
         },
         显示选择项目() {
-            消息隧道.触发事件({ 显示选择地图目录对话框: true });
+            消息隧道.触发事件('显示选择地图目录对话框', true);
         }
     }
 
-});
+};
 </script>
+
+<template>
+    <section>
+        <div class="设置">
+            <div class="金钱">10000</div>
+            <div class="联盟与设置">
+                <div class="按钮 联盟按钮" @click="显示选择项目()"></div>
+                <div class="按钮 设置按钮"></div>
+            </div>
+            <div class="小地图区域">
+                <小地图 />
+            </div>
+            <div class="维修和变卖">
+                <div class="按钮 维修按钮"></div>
+                <div class="按钮 变卖按钮"></div>
+            </div>
+            <el-dropdown trigger="contextmenu">
+                <div class="列表切换">
+                    <div class="按钮 建筑按钮" :class="[选中类型 === '建筑' ? '选中' : '']" @click="切换列表('建筑')"></div>
+                    <div class="按钮 防御按钮" :class="[选中类型 === '防御' ? '选中' : '']" @click="切换列表('防御')"></div>
+                    <div class="按钮 步兵按钮" :class="[选中类型 === '步兵' ? '选中' : '']" @click="切换列表('步兵')"></div>
+                    <div class="按钮 战车按钮" :class="[选中类型 === '战车' ? '选中' : '']" @click="切换列表('战车')"></div>
+                </div>
+                <template #dropdown>
+                    <el-dropdown-menu>
+                        <el-dropdown-item @click="设置只显示可建造单位">
+                            只显示可建造单位
+                            <el-icon v-if="只显示可建造单位 == true">
+                                <Check />
+                            </el-icon>
+                        </el-dropdown-item>
+                        <el-dropdown-item @click="设置显示所有单位">
+                            显示全部单位
+                            <el-icon v-if="只显示可建造单位 == false">
+                                <Check />
+                            </el-icon>
+                        </el-dropdown-item>
+                        <el-dropdown-item divided @click="设置不显示其他建筑">
+                            不显示其他建筑
+                            <el-icon v-if="显示其他建筑 == false">
+                                <Check />
+                            </el-icon>
+                        </el-dropdown-item>
+                        <el-dropdown-item @click="设置显示其他建筑">
+                            显示其他建筑
+                            <el-icon v-if="显示其他建筑 == true">
+                                <Check />
+                            </el-icon>
+                        </el-dropdown-item>
+                        <el-dropdown-item divided @click="显示搜索框">
+                            搜索单位
+                            <el-icon v-if="搜索 != ''">
+                                <Check />
+                            </el-icon>
+                        </el-dropdown-item>
+                        <el-dropdown-item v-if="搜索 !== ''" @click="取消搜索">取消搜索</el-dropdown-item>
+                        <el-dropdown-item divided>取消</el-dropdown-item>
+                    </el-dropdown-menu>
+                </template>
+            </el-dropdown>
+
+        </div>
+
+        <div class="单位列表">
+            <template v-for="单位配置 in 单位列表">
+                <div class="单位图标">
+                    <单位 :单位配置="单位配置" @编辑单位="显示编辑单位对话框" />
+                </div>
+            </template>
+        </div>
+        <div class="底部">
+
+        </div>
+    </section>
+    <编辑单位对话框 />
+</template>
+
 <style scoped>
 .设置 {
     background: url(./资源文件/图片/控制按钮默认状态.png);
@@ -171,6 +347,8 @@ export default 视图.创建组件({
     background-attachment: scroll;
     overflow: scroll;
     padding-left: 20px;
+    user-select: none;
+    align-content: flex-start;
 }
 
 .单位图标 {
@@ -188,40 +366,6 @@ export default 视图.创建组件({
 .底部 {
     height: 74px;
     background-image: url(./资源文件/图片/右下角背景.png);
+    flex: none;
 }
 </style>
-<template>
-    <section>
-        <div class="设置">
-            <div class="金钱">10000</div>
-            <div class="联盟与设置">
-                <div class="按钮 联盟按钮" @click="显示选择项目()"></div>
-                <div class="按钮 设置按钮"></div>
-            </div>
-            <div class="小地图区域">
-                <小地图 />
-            </div>
-            <div class="维修和变卖">
-                <div class="按钮 维修按钮"></div>
-                <div class="按钮 变卖按钮"></div>
-            </div>
-            <div class="列表切换">
-                <div class="按钮 建筑按钮" :class="[选中类型 === '建筑' ? '选中' : '']" @click="切换列表('建筑')"></div>
-                <div class="按钮 防御按钮" :class="[选中类型 === '防御' ? '选中' : '']" @click="切换列表('防御')"></div>
-                <div class="按钮 步兵按钮" :class="[选中类型 === '步兵' ? '选中' : '']" @click="切换列表('步兵')"></div>
-                <div class="按钮 战车按钮" :class="[选中类型 === '战车' ? '选中' : '']" @click="切换列表('战车')"></div>
-            </div>
-        </div>
-
-        <div class="单位列表">
-            <template v-for="单位配置 in 单位列表">
-                <div class="单位图标" v-if="单位配置.可以建造">
-                    <单位 :单位配置="单位配置" />
-                </div>
-            </template>
-        </div>
-        <div class="底部">
-
-        </div>
-    </section>
-</template>

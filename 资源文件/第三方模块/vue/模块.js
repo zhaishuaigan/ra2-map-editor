@@ -14,11 +14,16 @@ export default class 模块 {
                     throw Object.assign(new Error(url + ' ' + res.statusText), { res });
                 }
                 var resText = await res.text();
+
+                if (!界面地址.endsWith('.vue')) {
+                    return resText;
+
+                }
                 resText = resText.replace(/\<([\u4e00-\u9fa5]+)/g, (参数, 标签) => {
-                    return "<View_" + 中文组件名转换.中文转编码(标签);
+                    return "<V" + 中文组件名转换.中文转编码(标签);
                 });
                 resText = resText.replace(/\<\/([\u4e00-\u9fa5]+)/g, (参数, 标签) => {
-                    return "</View_" + 中文组件名转换.中文转编码(标签);
+                    return "</V" + 中文组件名转换.中文转编码(标签);
                 });
                 return resText;
             },
@@ -33,11 +38,11 @@ export default class 模块 {
             },
             compiledCache: {
                 set(key, str) {
-                    // console.log("缓存模板: ", key, str);
                     window.localStorage.setItem(key, str);
                 },
                 get(key) {
-                    return window.localStorage.getItem(key);
+                    var 缓存 = window.localStorage.getItem(key);
+                    return 缓存;
                 },
             },
             handleModule(type, source, path, options) {
