@@ -5,11 +5,9 @@ export default {
         return {
             默认图片: '/资源文件/图片/单位图标/xxicon.png',
             单位状态: {},
-            随机数: 0
         };
     },
     mounted() {
-        this.随机数 = Math.random();
         this.单位状态 = {
             已被修改: this.单位配置.已被修改,
             不能建造: this.单位配置.不能建造,

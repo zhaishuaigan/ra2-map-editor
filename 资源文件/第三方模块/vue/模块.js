@@ -11,6 +11,7 @@ export default class 模块 {
                 界面地址 = 界面地址.replace(/\/[^\/]*\/\.\.\//, '/');
                 const res = await fetch(界面地址);
                 if (!res.ok) {
+                    console.error("加载失败: ", res.url);
                     throw Object.assign(new Error(url + ' ' + res.statusText), { res });
                 }
                 var resText = await res.text();

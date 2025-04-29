@@ -100,4 +100,20 @@ export default class 配置 {
         return 合并后的配置;
     }
 
+    static async 加载配置文件(配置文件名) {
+        var 返回值 = await fetch(`/资源文件/配置/${配置文件名}`);
+        返回值 = await 返回值.text();
+        if (配置文件名.endsWith(".ini")) {
+            var 当前配置 = new 配置(返回值);
+            await 当前配置.异步解析();
+            return 当前配置;
+
+        } else if (配置文件名.endsWith(".json")) {
+            return JSON.parse(返回值);
+        } else {
+            console.log("不支持的配置文件格式");
+        }
+        return null;
+    }
+
 }

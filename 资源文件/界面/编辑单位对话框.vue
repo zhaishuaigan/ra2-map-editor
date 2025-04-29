@@ -1,6 +1,6 @@
 <script>
 export default {
-    components: 视图.加载组件(['编辑单位属性']),
+    components: 视图.加载组件(['编辑属性', '删除属性', '添加属性', '复制单位']),
     data() {
         return {
             当前标签页: "属性",
@@ -19,12 +19,11 @@ export default {
             if (!this.单位注册名) {
                 return [];
             }
-            if (!this.单位配置) {
-                return [];
-            }
+            this.单位配置 = window.选择的地图.获取单位(this.单位注册名);
             var 新增的属性 = [];
             var 修改的属性 = [];
             var 其他的属性 = [];
+            this.单位属性列表 = [];
             var 单位 = this.单位配置;
             for (let 标识 in 单位.属性) {
                 var 属性名 = 标识;
@@ -46,10 +45,11 @@ export default {
                 }
             }
             this.单位配置 = 单位;
-            this.单位属性列表 = [...新增的属性, ...修改的属性, ...其他的属性];
+            setTimeout(() => {
+                this.单位属性列表 = [...新增的属性, ...修改的属性, ...其他的属性];
+            }, 0);
         },
-        属性被修改(注册名, 属性名, 属性值) {
-            console.log(注册名, 属性名, 属性值);
+        属性被修改(注册名, 属性名 = "", 属性值 = "") {
             if (!this.显示编辑单位弹窗) {
                 return;
             }
@@ -57,13 +57,11 @@ export default {
             if (注册名 != this.单位注册名) {
                 return;
             }
-            this.单位配置 = window.选择的地图.获取单位(this.单位注册名);
             this.刷新();
         },
         编辑单位(单位注册名) {
             this.显示编辑单位弹窗 = true;
             this.单位注册名 = 单位注册名;
-            this.单位配置 = window.选择的地图.获取单位(this.单位注册名);
             this.刷新();
         },
         加载默认图标() {
@@ -81,7 +79,7 @@ export default {
                 cancelButtonText: '取消',
                 inputErrorMessage: '请输入属性名',
             }).then(async ({ value }) => {
-                this.单位配置.属性[value] = '';
+                window.选择的地图.修改属性值(单位注册名, value, '');
                 this.刷新();
             }).catch(() => {
             })
@@ -103,27 +101,28 @@ export default {
                 <div class="属性显示区域">
                     <el-descriptions :column="1" border>
                         <el-descriptions-item label="操作">
-                            <el-button type="success" @click="显示添加属性对话框(单位注册名)">
-                                <el-icon style=" margin-right: 3px">
-                                    <Plus />
-                                </el-icon>
-                                添加属性
-                            </el-button>
-                            <el-button type="success" @click="显示复制单位对话框(单位注册名)">
-                                <el-icon style=" margin-right: 3px">
-                                    <DocumentCopy />
-                                </el-icon>
-                                复制单位
-                            </el-button>
+                            <el-button-group>
+                                <添加属性 :注册名="单位注册名" />
+                                <复制单位 :注册名="单位注册名" />
+                            </el-button-group>
                         </el-descriptions-item>
-                        <el-descriptions-item v-for="属性 of 单位属性列表" :key="属性.属性名">
+                        <el-descriptions-item v-for="属性 of 单位属性列表">
                             <template #label>
                                 <el-tooltip class="box-item" effect="dark" raw-content :content="属性.说明"
                                     placement="bottom">
                                     {{ 属性.属性名 }}
                                 </el-tooltip>
                             </template>
-                            <编辑单位属性 :属性="属性" :注册名="单位注册名" />
+                            <div class="属性值">
+                                <span style="padding: 0px 5px;">{{ 属性.属性值 }}</span>
+                                <span v-if="属性.已修改" style="color: red">[默认值: {{ 属性.默认值 }}]</span>
+                                <span v-if="属性.新增" style="color: red;">[新增]</span>
+                                <el-button-group class="操作">
+                                    <编辑属性 :注册名="单位注册名" :属性="属性" />
+                                    <删除属性 :注册名="单位注册名" :属性="属性" />
+                                </el-button-group>
+                            </div>
+
                         </el-descriptions-item>
                     </el-descriptions>
                 </div>
@@ -139,6 +138,9 @@ export default {
             </div>
         </template>
     </el-dialog>
+
+
+
 </template>
 
 <style scoped>
@@ -147,10 +149,14 @@ export default {
     overflow-y: scroll;
 }
 
-.单位图标 {
+.编辑单位属性对话框 .单位图标 {
     position: absolute;
     left: 10px;
     top: 10px;
     border-radius: 5px;
+}
+
+.操作 {
+    margin-left: 10px;
 }
 </style>

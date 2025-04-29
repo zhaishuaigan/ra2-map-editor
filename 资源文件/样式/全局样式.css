@@ -160,6 +160,14 @@ section {
     resize: none;
 }
 
-.编辑单位属性对话框 .el-dialog__title {
+.编辑单位属性对话框>header>.el-dialog__title {
     padding-left: 70px;
+}
+
+.属性值 .操作>button {
+    visibility: hidden;
+}
+
+.属性值:hover .操作>button {
+    visibility: visible;
 }
