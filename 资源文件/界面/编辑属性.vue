@@ -19,14 +19,14 @@ export default {
         },
         保存属性() {
             window.选择的地图.修改属性值(this.注册名, this.属性名, this.属性值);
-            消息隧道.触发事件('属性被修改', [this.注册名, this.属性名, this.属性值]);
+            消息隧道.触发事件('刷新', [this.注册名, this.属性名, this.属性值]);
             this.编辑属性对话框 = false;
         },
         关闭() {
             this.编辑属性对话框 = false;
         },
         搜索属性值: async function (搜索词, 回调) {
-            var 提示数据 = (await 配置.加载配置文件('属性值翻译.ini')).配置项;
+            var 提示数据 = window.属性值翻译.配置项;
             var 所有提示词 = [];
             var 提示类型 = [];
             var 返回结果 = [];
@@ -77,7 +77,7 @@ export default {
 <template>
     <el-button type="primary" class="修改按钮" size="small" @click="显示编辑属性对话框">修改</el-button>
 
-    <el-dialog v-model="编辑属性对话框" :title="`编辑属性[${注册名}]`" width="500">
+    <el-dialog v-model="编辑属性对话框" :title="`编辑属性[${注册名}.${属性名}]`" width="500">
         <el-form @submit.native.prevent="保存属性(要添加的属性);">
             <el-form-item label="属性值">
                 <el-autocomplete v-model="属性值" :fetch-suggestions="搜索属性值" clearable fit-input-width

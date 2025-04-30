@@ -19,14 +19,14 @@ export default {
                 return;
             }
             window.选择的地图.添加属性值(this.注册名, this.属性名, this.属性值);
-            消息隧道.触发事件('属性被修改', [this.注册名, this.属性名, this.属性值]);
+            消息隧道.触发事件('刷新', [this.注册名, this.属性名, this.属性值]);
             this.添加属性对话框 = false;
         },
         关闭() {
             this.添加属性对话框 = false;
         },
         搜索属性名: async function (搜索词, 回调) {
-            var 提示数据 = (await 配置.加载配置文件('属性名翻译.ini')).配置项;
+            var 提示数据 = window.属性名翻译.配置项;
             var 所有提示词 = [];
             for (var 类型 in 提示数据) {
                 for (var 属性 in 提示数据[类型]) {
@@ -51,7 +51,7 @@ export default {
             回调(返回结果);
         },
         搜索属性值: async function (搜索词, 回调) {
-            var 提示数据 = (await 配置.加载配置文件('属性值翻译.ini')).配置项;
+            var 提示数据 = window.属性值翻译.配置项;
             var 所有提示词 = [];
             var 提示类型 = [];
             var 返回结果 = [];

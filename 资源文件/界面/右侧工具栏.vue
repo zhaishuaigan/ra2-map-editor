@@ -17,11 +17,15 @@ export default {
         };
     },
     mounted() {
+        消息隧道.事件服务(this);
         消息隧道.监听数据('已选择地图', async (数据) => {
             this.切换列表('建筑');
         });
     },
     methods: {
+        刷新() {
+            this.切换列表(this.选中类型);
+        },
         async 显示搜索框() {
             // 使用element-plus弹出一个用户输入框
             this.$prompt('请输入搜索内容', '搜索单位', {

@@ -1,3 +1,5 @@
+import 属性 from './属性.mjs';
+import 武器 from './武器.mjs';
 export default class 单位 {
     注册名 = '';
     属性 = {};
@@ -91,9 +93,33 @@ export default class 单位 {
             'EliteWeapon1',
             'DeathWeapon',
         ];
-        return [
 
-        ];
+        武器属性列表 = 武器属性列表.filter(属性名 => {
+            if (属性名 in this.属性) {
+                return true;
+            }
+            return false;
+        });
+
+        if ('WeaponCount' in this.属性) {
+            for (var i = 0; i < this.属性.WeaponCount; i++) {
+                if (this.属性[`Weapon${i}`]) {
+                    武器属性列表.push(`Weapon${i}`);
+                }
+                if (this.属性[`EliteWeapon${i}`]) {
+                    武器属性列表.push(`EliteWeapon${i}`);
+                }
+            }
+        }
+
+        var 返回结果 = [];
+
+        for (var 属性名 of 武器属性列表) {
+            var 当前武器 = 武器.获取武器(this.属性[属性名]);
+            当前武器.类型 = 属性名
+            返回结果.push(当前武器);
+        }
+        return 返回结果;
     }
 
     获取属性默认配置(属性名) {
@@ -106,6 +132,10 @@ export default class 单位 {
 
     属性被修改(属性名) {
         return this.有属性默认配置(属性名) && this.属性[属性名] != this.获取属性默认配置(属性名);
+    }
+
+    获取属性列表() {
+        return 属性.获取所有属性(this.注册名);
     }
 
 }

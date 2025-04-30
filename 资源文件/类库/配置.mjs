@@ -46,6 +46,15 @@ export default class 配置 {
 
     }
 
+    删除配置项(配置项) {
+        if (!this.配置项[配置项]) {
+            return false;
+        }
+        delete this.配置项[配置项];
+        this.编辑过的配置项.add(配置项);
+        return true;
+    }
+
     删除属性值(配置项, 属性名) {
         if (!this.配置项[配置项] || !this.配置项[配置项][属性名]) {
             return false;
@@ -53,6 +62,15 @@ export default class 配置 {
         delete this.配置项[配置项][属性名]
         this.编辑过的配置项.add(配置项);
         return true;
+    }
+
+    根据值删除属性(配置项, 属性值) {
+        for (let 属性名 of Object.keys(this.配置项[配置项])) {
+            if (this.配置项[配置项][属性名] == 属性值) {
+                delete this.配置项[配置项][属性名];
+                this.编辑过的配置项.add(配置项);
+            }
+        }
     }
 
     修改属性值(配置项, 属性名, 值) {

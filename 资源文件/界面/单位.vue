@@ -20,6 +20,27 @@ export default {
         },
         点击单位图标() {
             消息隧道.触发事件('编辑单位', this.单位配置.注册名);
+        },
+        禁止建造() {
+            window.选择的地图.修改属性值(this.单位配置.注册名, 'TechLevel', '11');
+            消息隧道.触发事件('刷新', this.单位配置.注册名);
+        },
+        允许建造() {
+            window.选择的地图.修改属性值(this.单位配置.注册名, 'TechLevel', '1');
+            消息隧道.触发事件('刷新', this.单位配置.注册名);
+        },
+        删除单位() {
+            if (this.单位配置.注册名 in window.选择的地图.默认配置.配置项) {
+                // 系统单位不能删除
+                this.$message({
+                    type: 'warning',
+                    message: '系统单位不能删除! 可以通过禁止建造来禁用单位!'
+                });
+                return;
+            }
+            window.选择的地图.删除单位(this.单位配置.注册名);
+            消息隧道.触发事件('刷新', this.单位配置.注册名);
+
         }
     }
 };
@@ -33,16 +54,15 @@ export default {
         <template #dropdown>
             <el-dropdown-menu>
                 <el-dropdown-item @click="点击单位图标">编辑属性</el-dropdown-item>
-                <el-dropdown-item>复制单位</el-dropdown-item>
-                <el-dropdown-item>删除单位</el-dropdown-item>
-                <el-dropdown-item @click="单位配置.属性.TechLevel = 11">
+                <el-dropdown-item @click="禁止建造">
                     禁止建造
                     <span v-if="单位配置.属性.TechLevel == 11" style=" padding-left: 5px;">✔</span>
                 </el-dropdown-item>
-                <el-dropdown-item @click="单位配置.属性.TechLevel = 1">
+                <el-dropdown-item @click="允许建造">
                     允许建造
                     <span v-if="单位配置.属性.TechLevel != 11" style=" padding-left: 5px;">✔</span>
                 </el-dropdown-item>
+                <el-dropdown-item @click="删除单位">删除单位</el-dropdown-item>
                 <el-dropdown-item>取消</el-dropdown-item>
             </el-dropdown-menu>
         </template>

@@ -26,7 +26,7 @@ export default {
                         type: 'success',
                         message: '删除成功!'
                     });
-                    消息隧道.触发事件('属性被修改', [this.注册名]);
+                    消息隧道.触发事件('刷新', [this.注册名]);
                 }).catch((e) => {
                 })
                 return;
@@ -43,7 +43,7 @@ export default {
                     type: 'success',
                     message: '恢复默认值成功!'
                 });
-                消息隧道.触发事件('属性被修改', [this.注册名]);
+                消息隧道.触发事件('刷新', [this.注册名]);
             }).catch((e) => {
             })
 

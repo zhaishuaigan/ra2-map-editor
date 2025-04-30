@@ -251,6 +251,71 @@ export default class 地图 {
 
     }
 
+    删除单位(注册名) {
+        if (注册名 in this.默认配置.配置项) {
+            // 系统单位, 不能删除
+            return;
+        }
+        if (!(注册名 in this.地图数据.配置项)) {
+            // 注册名不存在
+            return;
+        }
+
+
+        if (this.是建筑(注册名)) {
+            console.log(`删除单位: ${注册名}`);
+            this.地图数据.根据值删除属性('BuildingTypes', 注册名);
+            this.地图数据.删除配置项(注册名);
+            this.合并后的数据.地图数据.根据值删除属性('BuildingTypes', 注册名);
+            this.合并后的数据.地图数据.删除配置项(注册名);
+        }
+
+        if (this.是步兵(注册名)) {
+            this.地图数据.根据值删除属性('InfantryTypes', 注册名);
+            this.地图数据.删除配置项(注册名);
+            this.合并后的数据.地图数据.根据值删除属性('InfantryTypes', 注册名);
+            this.合并后的数据.地图数据.删除配置项(注册名);
+        }
+
+        if (this.是战车(注册名)) {
+            this.地图数据.根据值删除属性('VehicleTypes', 注册名);
+            this.地图数据.删除配置项(注册名);
+            this.合并后的数据.地图数据.根据值删除属性('VehicleTypes', 注册名);
+            this.合并后的数据.地图数据.删除配置项(注册名);
+        }
+        if (this.是飞行器(注册名)) {
+            this.地图数据.根据值删除属性('AircraftTypes', 注册名);
+            this.地图数据.删除配置项(注册名);
+            this.合并后的数据.地图数据.根据值删除属性('AircraftTypes', 注册名);
+            this.合并后的数据.地图数据.删除配置项(注册名);
+        }
+    }
+
+    是建筑(注册名) {
+        if (Object.values(this.合并后的数据.地图数据.配置项['BuildingTypes']).includes(注册名)) {
+            return true;
+        }
+        return false;
+    }
+    是步兵(注册名) {
+        if (Object.values(this.合并后的数据.地图数据.配置项['InfantryTypes']).includes(注册名)) {
+            return true;
+        }
+        return false;
+    }
+    是战车(注册名) {
+        if (Object.values(this.合并后的数据.地图数据.配置项['VehicleTypes']).includes(注册名)) {
+            return true;
+        }
+        return false;
+    }
+    是飞行器(注册名) {
+        if (Object.values(this.合并后的数据.地图数据.配置项['AircraftTypes']).includes(注册名)) {
+            return true;
+        }
+        return false;
+    }
+
     添加属性值(配置项, 属性名, 属性值) {
         this.地图数据.添加属性值(配置项, 属性名, 属性值);
         this.合并后的数据.地图数据.添加属性值(配置项, 属性名, 属性值);
