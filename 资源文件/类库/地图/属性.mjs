@@ -30,7 +30,7 @@ export default class 属性 {
         }
         排序后结果 = [...新增的属性, ...修改的属性, ...默认的属性];
         // return 未排序结果;
-        return 返回结果;
+        return 排序后结果;
     }
 
     get 有默认值() {

@@ -1,6 +1,6 @@
 <script>
 export default {
-    components: 视图.加载组件(['小地图', '编辑单位对话框', '单位']),
+    components: 视图.加载组件(['小地图', '编辑单位对话框', '单位', '测试运行']),
     data() {
         return {
             选中类型: "建筑",
@@ -16,13 +16,16 @@ export default {
             加载更多: null,
         };
     },
-    mounted() {
-        消息隧道.事件服务(this);
-        消息隧道.监听数据('已选择地图', async (数据) => {
-            this.切换列表('建筑');
-        });
+    created() {
+        this.事件服务(this);
     },
     methods: {
+        关闭编辑单位属性对话框() {
+            this.刷新();
+        },
+        已选择地图() {
+            this.切换列表('建筑');
+        },
         刷新() {
             this.切换列表(this.选中类型);
         },
@@ -74,7 +77,6 @@ export default {
             if (this.搜索 != '') {
                 console.log('搜索:', this.搜索);
                 单位列表 = 单位列表.filter((单位) => {
-                    console.log('搜索:', 单位.显示名, 单位.注册名);
                     return 单位.显示名.includes(this.搜索) || 单位.注册名.includes(this.搜索);
                 });
             }
@@ -134,9 +136,6 @@ export default {
             this.显示单位编辑器 = true;
             this.编辑单位 = 编辑单位;
         },
-        显示选择项目() {
-            消息隧道.触发事件('显示选择地图目录对话框', true);
-        }
     }
 
 };
@@ -147,8 +146,9 @@ export default {
         <div class="设置">
             <div class="金钱">10000</div>
             <div class="联盟与设置">
-                <div class="按钮 联盟按钮" @click="显示选择项目()"></div>
-                <div class="按钮 设置按钮"></div>
+                <div class="按钮 联盟按钮" @click="触发事件('显示选择地图目录对话框')"></div>
+                <div class="按钮 设置按钮" @click="触发事件('显示测试运行对话框')"></div>
+                <测试运行 />
             </div>
             <div class="小地图区域">
                 <小地图 />

@@ -164,10 +164,10 @@ section {
     padding-left: 70px;
 }
 
-.属性值 .操作>button {
+.属性值 .编辑属性>button {
     visibility: hidden;
 }
 
-.属性值:hover .操作>button {
+.属性值:hover .编辑属性>button {
     visibility: visible;
 }

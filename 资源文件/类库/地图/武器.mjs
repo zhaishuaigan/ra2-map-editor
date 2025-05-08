@@ -17,11 +17,31 @@ export default class 武器 {
     }
 
     get 弹头() {
-        return 弹头.获取弹头(this.属性.Warhead);
+        if ('Warhead' in this.属性) {
+            return 弹头.获取弹头(this.属性.Warhead);
+        }
+
+        if ('WeaponType' in this.属性) {
+            var 超舞配置 = window.选择的地图.合并后的数据.地图数据.获取配置项(this.属性.WeaponType)
+            if (超舞配置 && 'Warhead' in 超舞配置) {
+                return 弹头.获取弹头(超舞配置.Warhead);
+            }
+        }
+        return 弹头.获取弹头('未定义');
     }
 
     get 抛射体() {
-        return 抛射体.获取抛射体(this.属性.Projectile);
+        if ('Projectile' in this.属性) {
+            return 抛射体.获取抛射体(this.属性.Projectile);
+        }
+
+        if ('WeaponType' in this.属性) {
+            var 超舞配置 = window.选择的地图.合并后的数据.地图数据.获取配置项(this.属性.WeaponType)
+            if (超舞配置 && 'Projectile' in 超舞配置) {
+                return 抛射体.获取抛射体(超舞配置.Projectile);
+            }
+        }
+        return 抛射体.获取抛射体('未定义');
     }
 
     获取属性列表() {

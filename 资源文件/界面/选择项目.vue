@@ -45,7 +45,6 @@ export default {
             });
         },
         async 测试() {
-
             var 字库内容 = await 地图.加载默认配置('尤里的复仇', 'ra2md');
             window.字库 = new 配置(字库内容);
             await window.字库.异步解析();
@@ -53,9 +52,7 @@ export default {
             window.项目 = null;
             window.选择的地图 = new 地图(window.项目, { 读取内容: function () { return ''; } });
             await window.选择的地图.加载地图();
-            消息隧道.设置数据({
-                已选择地图: true
-            });
+            this.触发事件('已选择地图');
             return true;
         },
         显示选择地图目录对话框() {
@@ -100,13 +97,9 @@ export default {
             }
             var 选择的地图 = new 地图(项目.项目目录, 项目.选中的地图);
             await 选择的地图.加载地图();
-            var 消息内容 = {
-                消息类型: "用户选择地图",
-                已选择地图: true
-            }
             window.选择的地图 = 选择的地图;
             window.项目 = 项目;
-            消息隧道.设置数据(消息内容);
+            this.触发事件('已选择地图');
             this.选择地图文件对话框 = false;
             // console.log("地图数据: ", 选择的地图.获取地图数据());
             // console.log("缩略图数据: ", atob(选择的地图.获取缩略图数据()));

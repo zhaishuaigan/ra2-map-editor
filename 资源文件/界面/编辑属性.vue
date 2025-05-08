@@ -1,5 +1,4 @@
 <script>
-import 配置 from '../类库/配置.mjs';
 export default {
     props: ['注册名', '属性'],
     data() {
@@ -19,7 +18,9 @@ export default {
         },
         保存属性() {
             window.选择的地图.修改属性值(this.注册名, this.属性名, this.属性值);
-            消息隧道.触发事件('刷新', [this.注册名, this.属性名, this.属性值]);
+            this.属性.属性值 = this.属性值;
+            this.触发事件('属性被修改', [this.注册名, this.属性名, this.属性值]);
+            // 消息隧道.触发事件('刷新', [this.注册名, this.属性名, this.属性值]);
             this.编辑属性对话框 = false;
         },
         关闭() {

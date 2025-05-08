@@ -2,7 +2,7 @@
 export default {
     data() {
         return {
-            已选择地图: false,
+            用户已选择地图: false,
             预览图地址: './资源文件/测试文件/不公平的熬鹰地时间.png',
             消息隧道: null,
         };
@@ -14,9 +14,12 @@ export default {
         this.绑定右键地图平移事件();
         this.绑定消息处理事件();
         this.绑定窗口大小改变事件();
-        消息隧道.数据服务(this);
+        this.事件服务(this);
     },
     methods: {
+        已选择地图() {
+            this.用户已选择地图 = true;
+        },
         绑定窗口大小改变事件() {
             window.addEventListener('resize', () => {
                 this.发送地图区域大小改变();
@@ -239,7 +242,7 @@ export default {
 <template>
     <div class="map">
         <div class="box" ref="地图区域">
-            <img v-if="已选择地图" :src="预览图地址" alt="" @load="地图加载完成">
+            <img v-if="用户已选择地图" :src="预览图地址" alt="" @load="地图加载完成">
         </div>
     </div>
 </template>
