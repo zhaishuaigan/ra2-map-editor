@@ -71,4 +71,19 @@ export default class 目录 {
         return navigator.storage.getDirectory('缓存');
     }
 
+    async 文件是否存在(文件名) {
+        return await this.句柄.getFileHandle(文件名).then(() => true).catch(() => false);
+    }
+
+    async 目录是否存在(目录名) {
+        return await this.句柄.getDirectoryHandle(目录名).then(() => true).catch(() => false);
+    }
+
+    async 获取子文件(文件名) {
+        if (!await this.文件是否存在(文件名)) {
+            return null;
+        }
+        return new 文件(await this.句柄.getFileHandle(文件名));
+    }
+
 }

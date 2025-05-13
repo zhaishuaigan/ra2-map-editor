@@ -21,8 +21,7 @@ export default {
         if (!测试) {
             this.显示选择地图目录对话框();
         }
-        消息隧道.数据服务(this);
-        消息隧道.事件服务(this);
+        this.事件服务(this);
         this.绑定保存地图事件();
     },
     methods: {
