@@ -60,7 +60,7 @@ export default {
             }, "选择目录");
         },
         async 选择目录() {
-            项目.项目目录 = await 目录.打开目录();
+            项目.项目目录 = await 目录.打开目录('map');
             if (!项目.项目目录) {
                 return;
             }

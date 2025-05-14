@@ -5,8 +5,9 @@ export default class 目录 {
         this.句柄 = 目录句柄;
     }
 
-    static async 打开目录(访问模式 = "readwrite") {
+    static async 打开目录(标识 = "", 访问模式 = "readwrite") {
         const 目录句柄 = await window.showDirectoryPicker({
+            id: 标识,
             mode: 访问模式
         })
         return new 目录(目录句柄);
@@ -84,6 +85,10 @@ export default class 目录 {
             return null;
         }
         return new 文件(await this.句柄.getFileHandle(文件名));
+    }
+
+    保存句柄() {
+        this.句柄.js
     }
 
 }

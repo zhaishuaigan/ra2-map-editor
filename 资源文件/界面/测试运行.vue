@@ -1,7 +1,10 @@
 <script>
+import 目录 from '../类库/目录.mjs';
+var 游戏目录 = null;
 export default {
     data() {
         return {
+            编号: '',
             配置文件名: '测试运行配置.json',
             显示弹窗: false,
             地图: '',
@@ -36,6 +39,9 @@ export default {
         }
     },
     computed: {
+        启动链接() {
+            return 'run://' + this.编号;
+        },
         玩家和电脑配置() {
             return [
                 this.玩家,
@@ -44,14 +50,30 @@ export default {
 
         }
     },
-    async created() {
-
+    async mounted() {
+        this.生成编号();
         this.事件服务(this);
     },
     methods: {
+        生成编号() {
+            this.编号 = Math.random().toString().slice(2);
+        },
         async 显示测试运行对话框() {
             await this.读取配置();
-            this.显示弹窗 = true;
+            if (游戏目录) {
+                this.显示弹窗 = true;
+                return;
+            }
+
+            ElementPlus.ElMessageBox.alert('检测到你还没有选择游戏目录, 选择游戏目录后才能使用测试运行功能', '提示', {
+                confirmButtonText: '选择游戏目录',
+                callback: async () => {
+                    游戏目录 = await 目录.打开目录('game');
+                    this.显示弹窗 = true;
+                },
+            })
+
+
         },
         添加电脑() {
             this.电脑.push({
@@ -92,9 +114,24 @@ export default {
                 }
             }
         },
-        运行测试() {
+        async 运行测试() {
             this.保存配置();
-        }
+            await this.生成配置();
+            await this.写入地图数据();
+        },
+        生成配置() {
+            var 配置内容 = '我是配置内容';
+            // await 游戏目录.创建子文件('spawn.ini', 配置内容);
+        },
+        async 写入地图数据() {
+            var 地图数据 = await window.选择的地图.地图文件.读取内容();
+            await 游戏目录.创建子文件('mp.dat', 地图数据);
+        },
+        下载游戏() {
+
+        },
+        帮助() {
+        },
     }
 }
 
@@ -154,30 +191,63 @@ export default {
         <div class="玩家和电脑配置">
             <h3>玩家和电脑配置</h3>
             <el-table :data="玩家和电脑配置" style="width: 100%; margin-bottom: 10px;" border>
-                <el-table-column prop="名字" label="名字" width="120"></el-table-column>
-                <el-table-column prop="国家" label="国家" width="100">
+                <el-table-column prop="名字" label="名字" width="100"></el-table-column>
+                <el-table-column prop="国家" label="国家" width="120">
                     <template #default="scope">
-                        <span v-if="scope.row.国家">{{ scope.row.国家 }}</span>
-                        <span v-else>随机</span>
+                        <el-select v-model="scope.row.国家" placeholder="随机">
+                            <el-option label="随机" :value="''" />
+                            <el-option label="美国" :value="'0'" />
+                            <el-option label="韩国" :value="'1'" />
+                            <el-option label="法国" :value="'2'" />
+                            <el-option label="德国" :value="'3'" />
+                            <el-option label="英国" :value="'4'" />
+                            <el-option label="利比亚" :value="'5'" />
+                            <el-option label="伊拉克" :value="'6'" />
+                            <el-option label="古巴" :value="'7'" />
+                            <el-option label="苏俄" :value="'8'" />
+                            <el-option label="尤里" :value="'9'" />
+                        </el-select>
                     </template>
                 </el-table-column>
-                <el-table-column prop="颜色" label="颜色" width="100">
+                <el-table-column prop="颜色" label="颜色" width="110">
                     <template #default="scope">
-                        <div v-if="!scope.row.isOpen" class="颜色框" :style="{ backgroundColor: scope.row.颜色 }">
-                        </div>
-                        <div v-else class="颜色框"></div>
+                        <el-select v-model="scope.row.颜色" placeholder="随机">
+                            <el-option label="随机" :value="''" />
+                            <el-option label="黄色" :value="'0'" />
+                            <el-option label="红色" :value="'1'" />
+                            <el-option label="蓝色" :value="'2'" />
+                            <el-option label="绿色" :value="'3'" />
+                            <el-option label="橙色" :value="'4'" />
+                            <el-option label="天蓝" :value="'5'" />
+                            <el-option label="紫色" :value="'6'" />
+                            <el-option label="粉色" :value="'7'" />
+                        </el-select>
                     </template>
                 </el-table-column>
-                <el-table-column prop="位置" label="位置" width="100">
+                <el-table-column prop="位置" label="位置" width="110">
                     <template #default="scope">
-                        <span v-if="scope.row.位置">{{ scope.row.位置 }}</span>
-                        <span v-else>随机</span>
+                        <el-select v-model="scope.row.位置" placeholder="随机">
+                            <el-option label="随机" :value="''" />
+                            <el-option label="1" :value="'1'" />
+                            <el-option label="2" :value="'2'" />
+                            <el-option label="3" :value="'3'" />
+                            <el-option label="4" :value="'4'" />
+                            <el-option label="5" :value="'5'" />
+                            <el-option label="6" :value="'6'" />
+                            <el-option label="7" :value="'7'" />
+                            <el-option label="8" :value="'8'" />
+                        </el-select>
                     </template>
                 </el-table-column>
                 <el-table-column prop="小队" label="小队" width="100">
                     <template #default="scope">
-                        <span v-if="scope.row.小队">{{ scope.row.小队 }}</span>
-                        <span v-else>随机</span>
+                        <el-select v-model="scope.row.小队" placeholder="随机">
+                            <el-option label="随机" :value="''" />
+                            <el-option label="A" :value="'A'" />
+                            <el-option label="B" :value="'B'" />
+                            <el-option label="C" :value="'C'" />
+                            <el-option label="D" :value="'D'" />
+                        </el-select>
                     </template>
                 </el-table-column>
                 <el-table-column fixed="right" label="操作" min-width="120">
@@ -194,7 +264,10 @@ export default {
             </el-button>
         </div>
         <div class="按钮组">
-            <el-button type="primary" @click="运行测试">运行测试</el-button>
+            <el-button type="text" @click="帮助">帮助</el-button>
+            <a :href="启动链接">
+                <el-button type="primary" @click="运行测试">运行</el-button>
+            </a>
         </div>
     </el-dialog>
 </template>
@@ -218,6 +291,6 @@ export default {
 
 .按钮组 {
     padding: 10px;
-    text-align: center;
+    text-align: right;
 }
 </style>
