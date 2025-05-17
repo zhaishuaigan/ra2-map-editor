@@ -35,6 +35,10 @@ export default class 配置 {
         }
     }
 
+    get 有更新() {
+        return this.编辑过的配置项.size > 0;
+    }
+
     获取配置项(配置项) {
         return this.配置项[配置项];
     }
@@ -90,9 +94,29 @@ export default class 配置 {
         return 配置内容;
     }
 
-    获取更新后的配置内容() {
+    更新配置内容() {
+        for (let 配置项 of this.编辑过的配置项) {
+            if (配置项 == "") continue;
+            if (!this.配置项[配置项] || Object.keys(this.配置项[配置项]).length == 0) {
+                // 删除配置项
+                this.配置内容 = this.配置内容.replace(new RegExp('\\[' + 配置项 + '\\][\\s\\S]*?([\\[]|$)'), '$1');
+                continue;
+            }
+            let 配置项内容 = "";
+            for (let 属性名 of Object.keys(this.配置项[配置项])) {
+                配置项内容 += 属性名 + "=" + this.配置项[配置项][属性名] + "\n";
+            }
 
-
+            // 如果已有配置项，则替换, 否则添加
+            if (this.配置内容.includes(`[${配置项}]`)) {
+                var 原内容 = new RegExp('\\[' + 配置项 + '\\][\\s\\S]*?(\n\\[|$)');
+                var 新内容 = `[${配置项}]\n${配置项内容}$1`
+                this.配置内容 = this.配置内容.replace(原内容, 新内容);
+            } else {
+                this.配置内容 += `\n\n[${配置项}]\n${配置项内容}`;
+            }
+        }
+        this.编辑过的配置项 = new Set();
     }
 
     获取配置项的所有属性名(配置项) {

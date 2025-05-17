@@ -2,6 +2,7 @@
 import 界面助手 from '../第三方模块/element-plus/界面助手.mjs';
 import 地图 from '../类库/地图.mjs';
 import 目录 from '../类库/目录.mjs';
+import 文件 from '../类库/文件.mjs';
 import 配置 from '../类库/配置.mjs';
 
 var 项目 = {
@@ -32,9 +33,23 @@ export default {
                     e.preventDefault();
 
                     if (!window.选择的地图) {
+                        this.$message({
+                            message: '没有选择地图, 操作无效!',
+                            type: 'info'
+                        });
                         return;
                     }
-                    // await window.选择的地图.保存地图();
+                    if (false == window.选择的地图.有更新) {
+                        this.$message({
+                            message: '地图没有更新, 无需保存!',
+                            type: 'info'
+                        });
+                        return;
+                    }
+
+                    await this.创建历史记录();
+
+                    await window.选择的地图.保存();
                     this.$message({
                         message: '保存成功',
                         type: 'success'
@@ -43,13 +58,22 @@ export default {
                 }
             });
         },
+        async 创建历史记录() {
+            var 文件名 = 项目.选中的地图.文件名;
+            var 历史记录目录 = await 项目.项目目录.创建子目录('历史记录');
+            var 时间 = new Date().toLocaleString().replace(/\//g, '-').replace(/:/g, '.');
+            var 历史记录文件名 = 文件名.replace('.' + 项目.选中的地图.扩展名, " 备份时间为 " + 时间 + '.' + 项目.选中的地图.扩展名);
+            var 历史记录文件 = await 历史记录目录.创建子文件(历史记录文件名);
+            await 项目.选中的地图.复制到(历史记录文件);
+        },
         async 测试() {
             var 字库内容 = await 地图.加载默认配置('尤里的复仇', 'ra2md');
             window.字库 = new 配置(字库内容);
             await window.字库.异步解析();
 
-            window.项目 = null;
-            window.选择的地图 = new 地图(window.项目, { 读取内容: function () { return ''; } });
+            项目.项目目录 = await navigator.storage.getDirectory();
+            var 测试文件 = new 文件(await 项目.项目目录.getFileHandle("test.mpr", { create: true }));
+            window.选择的地图 = new 地图(window.项目, 测试文件);
             await window.选择的地图.加载地图();
             this.触发事件('已选择地图');
             return true;
@@ -102,7 +126,7 @@ export default {
             this.选择地图文件对话框 = false;
             // console.log("地图数据: ", 选择的地图.获取地图数据());
             // console.log("缩略图数据: ", atob(选择的地图.获取缩略图数据()));
-            // console.log("所有触发器: ", 选择的地图.获取所有触发器());
+            console.log("所有触发器: ", 选择的地图.获取所有触发器());
             // console.log('删除前的触发器: ', { ...选择的地图.地图数据.获取配置项('Triggers') })
             // 选择的地图.删除触发器('01000000');
             // console.log('删除后的触发器: ', { ...选择的地图.地图数据.获取配置项('Triggers') })
@@ -111,7 +135,12 @@ export default {
             // console.log('获取步兵栏的单位: ', await 选择的地图.获取步兵栏的单位())
             // console.log('获取战车栏的单位: ', await 选择的地图.获取战车栏的单位())
 
+        },
+
+        监听文件修改() {
+
         }
+
     }
 };
 </script>

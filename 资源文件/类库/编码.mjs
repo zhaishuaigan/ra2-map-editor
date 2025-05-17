@@ -2580,6 +2580,7 @@ function encodeGBK(text) {
 }
 
 window.encodeGBK = encodeGBK;
+window.转国标 = encodeGBK;
 
 module.exports = encodeGBK;
 },{"iconv-lite":28}],9:[function(require,module,exports){

@@ -102,19 +102,11 @@ export default {
             }
             单位列表 = [...新增单位列表, ...修改单位列表, ...其他单位列表];
 
-            if (单位列表.length < 30) {
-                this.单位列表 = 单位列表;
-                return;
-            }
-
-
             this.加载更多 = setInterval(() => {
-                for (let i = 0; i < 10; i++) {
-                    if (单位列表.length) {
-                        this.单位列表.push(单位列表.shift());
-                    }
+                if (单位列表.length) {
+                    this.单位列表.push(单位列表.shift());
                 }
-            }, 100);
+            }, 20);
         },
         设置显示其他建筑() {
             this.显示其他建筑 = true;

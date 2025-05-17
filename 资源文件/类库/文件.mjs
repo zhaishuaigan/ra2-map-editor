@@ -1,5 +1,6 @@
 export default class 文件 {
     文件句柄 = null;
+    文件监听器 = null;
     constructor(文件句柄) {
         this.文件句柄 = 文件句柄;
     }
@@ -26,9 +27,33 @@ export default class 文件 {
     }
 
     async 读取内容() {
+        if (!this.文件句柄) { return '' };
         await this.文件句柄.requestPermission({ mode: 'readwrite' });
         const 文件内容 = await this.文件句柄.getFile();
         return await 文件内容.text();
+    }
+
+    async 使用国标编码读取内容() {
+        if (!this.文件句柄) { return '' };
+        await this.文件句柄.requestPermission({ mode: 'readwrite' });
+        var 文件对象 = await this.文件句柄.getFile();
+        return await new Promise((resolve, reject) => {
+            var 读取器 = new FileReader();
+            读取器.onload = function (event) {
+                var arrayBuffer = event.target.result;
+                var decoder = new TextDecoder('gb18030');
+                var text = decoder.decode(new Uint8Array(arrayBuffer));
+                resolve(text);
+            };
+            读取器.readAsArrayBuffer(文件对象);
+        });
+    }
+
+    async 使用国标编码写入内容(内容) {
+        await this.文件句柄.requestPermission({ mode: 'readwrite' });
+        var 可写对象 = await this.文件句柄.createWritable();
+        可写对象.write(转国标(内容));
+        可写对象.close();
     }
 
     async 删除() {
@@ -49,5 +74,28 @@ export default class 文件 {
     }
     get 扩展名() {
         return this.文件句柄.name.split('.').pop();
+    }
+
+    async 复制到(新文件) {
+        await 新文件.文件句柄.requestPermission({ mode: 'readwrite' });
+        var 可写对象 = await 新文件.文件句柄.createWritable();
+        可写对象.write(await this.文件句柄.getFile());
+        可写对象.close();
+    }
+
+    监控文件(回调函数) {
+        this.文件监听器 = new FileSystemObserver((records, observer) => {
+            for (const record of records) {
+                console.log("检测到的变化：", record);
+                console.log(`观察到的变更为 ${record.changedHandle.kind} ${record.changedHandle.name}。类型：${record.type}。`);
+                回调函数(record);
+            }
+        });
+        this.文件监听器.observe(this.文件句柄);
+
+    }
+    停止监控文件() {
+        if (!this.文件监听器) return;
+        this.文件监听器.disconnect();
     }
 }

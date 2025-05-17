@@ -1,4 +1,5 @@
 import 单位 from "./地图/单位.mjs";
+import 触发器 from "./地图/触发器.mjs";
 import 配置 from "./配置.mjs";
 export default class 地图 {
     版本 = "尤里的复仇";
@@ -18,7 +19,7 @@ export default class 地图 {
     }
 
     async 加载地图() {
-        var 地图文件内容 = await this.地图文件.读取内容();
+        var 地图文件内容 = await this.地图文件.使用国标编码读取内容();
         var 自定义动画内容 = "";
         // TODO:: 未来实现自定义动画
         this.地图数据 = new 配置(地图文件内容);
@@ -237,8 +238,8 @@ export default class 地图 {
         var 行为配置 = 触发器配置['Actions'];
         var 所有触发器 = [];
         for (var 编号 in 标签配置) {
-            var 触发器 = new 触发器(编号, 标签配置, 事件配置, 行为配置);
-            所有触发器.push(触发器);
+            var 当前触发器 = new 触发器(编号, 标签配置, 事件配置, 行为配置);
+            所有触发器.push(当前触发器);
         }
         return 所有触发器;
 
@@ -404,6 +405,16 @@ export default class 地图 {
         var 返回值 = await fetch(`/资源文件/配置/默认配置/${版本}/${配置名}.ini`);
         返回值 = await 返回值.text();
         return 返回值;
+    }
+
+    async 保存() {
+        this.地图数据.更新配置内容();
+        var 更新后的内容 = this.地图数据.配置内容;
+        this.地图文件.使用国标编码写入内容(更新后的内容);
+    }
+
+    get 有更新() {
+        return this.地图数据.有更新;
     }
 
 
