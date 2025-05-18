@@ -4,17 +4,42 @@ export default {
     data() {
         return {
             默认图片: '/资源文件/图片/小地图默认图片.png',
-            小地图图片: '/资源文件/测试文件/不公平的熬鹰地时间.png',
+            小地图图片: '',
             用户已选择地图: false
         }
     },
     mounted() {
-        消息隧道.数据服务(this);
+        this.事件服务(this);
         this.监听地图偏移消息();
     },
     methods: {
         已选择地图() {
             this.用户已选择地图 = true;
+            this.获取小地图();
+        },
+        async 获取小地图() {
+            var 缩略图名字 = '缩略图.png';
+            var 缩略图 = await window.项目.项目目录.获取子文件(缩略图名字);
+            if (缩略图) {
+                var 读取器 = new FileReader();
+                读取器.onload = () => {
+                    this.小地图图片 = 读取器.result;
+                };
+                读取器.readAsDataURL(await 缩略图.文件句柄.getFile());
+                return;
+            }
+
+            var 预览图名字 = '预览图.png';
+            var 预览图 = await window.项目.项目目录.获取子文件(预览图名字);
+            if (预览图) {
+                var 读取器 = new FileReader();
+                读取器.onload = () => {
+                    this.小地图图片 = 读取器.result;
+                };
+                读取器.readAsDataURL(await 预览图.文件句柄.getFile());
+                return;
+            }
+
         },
         监听地图偏移消息() {
 
@@ -96,10 +121,10 @@ export default {
 </script>
 <template>
     <div class="小地图展示区域">
-        <div class="默认图片" v-show="!已选择地图">
+        <div class="默认图片" v-show="!小地图图片">
             <img :src="默认图片" @click="点击小地图" alt="">
         </div>
-        <div class="盒子" ref="小地图" v-show="已选择地图">
+        <div class="盒子" ref="小地图" v-show="小地图图片">
             <img :src="小地图图片" @click="点击小地图" alt="">
         </div>
     </div>

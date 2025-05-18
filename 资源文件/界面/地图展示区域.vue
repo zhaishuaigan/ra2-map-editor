@@ -3,7 +3,7 @@ export default {
     data() {
         return {
             用户已选择地图: false,
-            预览图地址: './资源文件/测试文件/不公平的熬鹰地时间.png',
+            预览图地址: '',
             消息隧道: null,
         };
 
@@ -19,6 +19,20 @@ export default {
     methods: {
         已选择地图() {
             this.用户已选择地图 = true;
+            this.获取预览图();
+
+        },
+        async 获取预览图() {
+            var 预览图名字 = '预览图.png';
+            var 预览图 = await window.项目.项目目录.获取子文件(预览图名字);
+            if (预览图) {
+                var 读取器 = new FileReader();
+                读取器.onload = () => {
+                    this.预览图地址 = 读取器.result;
+                };
+                读取器.readAsDataURL(await 预览图.文件句柄.getFile());
+                return;
+            }
         },
         绑定窗口大小改变事件() {
             window.addEventListener('resize', () => {
@@ -242,7 +256,7 @@ export default {
 <template>
     <div class="map">
         <div class="box" ref="地图区域">
-            <img v-if="用户已选择地图" :src="预览图地址" alt="" @load="地图加载完成">
+            <img v-if="预览图地址" :src="预览图地址" alt="" @load="地图加载完成">
         </div>
     </div>
 </template>

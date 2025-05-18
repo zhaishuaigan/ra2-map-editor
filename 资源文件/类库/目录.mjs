@@ -42,7 +42,7 @@ export default class 目录 {
     }
     async 创建子文件(子文件名, 内容 = '') {
         const 子文件句柄 = await this.句柄.getFileHandle(子文件名, {
-            create: true
+            create: true,
         });
         const 新文件 = new 文件(子文件句柄);
         await 新文件.写入(内容);
@@ -81,14 +81,16 @@ export default class 目录 {
     }
 
     async 获取子文件(文件名) {
-        if (!await this.文件是否存在(文件名)) {
-            return null;
+        var 所有文件 = await this.获取子文件列表();
+        for (var 子文件 of 所有文件) {
+            if (子文件.文件名 == 文件名) {
+                return 子文件;
+            }
         }
-        return new 文件(await this.句柄.getFileHandle(文件名));
+        return null;
     }
 
     保存句柄() {
-        this.句柄.js
     }
 
 }

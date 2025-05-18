@@ -14,6 +14,16 @@ export default class 文件 {
         return new 文件(fileHandle);
     }
 
+    static async 保存一个文件(文件名, 内容, 目录编号 = 'default') {
+        var 文件句柄 = await window.showSaveFilePicker({
+            id: 目录编号,
+            suggestedName: 文件名
+        });
+        var 新文件 = new 文件(文件句柄);
+        await 新文件.写入(内容);
+        return 新文件;
+    }
+
     async 写入(内容) {
         const 可写对象 = await this.文件句柄.createWritable();
         await 可写对象.write(内容);

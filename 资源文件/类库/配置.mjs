@@ -90,6 +90,7 @@ export default class 配置 {
             for (let 属性名 of Object.keys(this.配置项[配置项])) {
                 配置内容 += 属性名 + "=" + this.配置项[配置项][属性名] + "\n";
             }
+            配置内容 += "\n";
         }
         return 配置内容;
     }

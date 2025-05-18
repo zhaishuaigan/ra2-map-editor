@@ -18,10 +18,14 @@ export default {
         };
     },
     async mounted() {
-        var 测试 = await this.测试();
-        if (!测试) {
-            this.显示选择地图目录对话框();
-        }
+        var 字库内容 = await 地图.加载默认配置('尤里的复仇', 'ra2md');
+        window.字库 = new 配置(字库内容);
+        await window.字库.异步解析();
+
+        // var 测试 = await this.测试();
+        // if (!测试) {
+        this.显示选择地图目录对话框();
+        //}
         this.事件服务(this);
         this.绑定保存地图事件();
     },
@@ -126,7 +130,7 @@ export default {
             this.选择地图文件对话框 = false;
             // console.log("地图数据: ", 选择的地图.获取地图数据());
             // console.log("缩略图数据: ", atob(选择的地图.获取缩略图数据()));
-            console.log("所有触发器: ", 选择的地图.获取所有触发器());
+            // console.log("所有触发器: ", 选择的地图.获取所有触发器());
             // console.log('删除前的触发器: ', { ...选择的地图.地图数据.获取配置项('Triggers') })
             // 选择的地图.删除触发器('01000000');
             // console.log('删除后的触发器: ', { ...选择的地图.地图数据.获取配置项('Triggers') })
